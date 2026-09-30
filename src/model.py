@@ -154,8 +154,14 @@ def player_rates(key, pos_hint="F"):
     raw = dict(sog=rate("I_F_shotsOnGoal"), ixg=rate("I_F_xGoals"), g=rate("I_F_goals"),
                a=rate("I_F_primaryAssists") + rate("I_F_secondaryAssists"), pts=rate("I_F_points"))
     shr = {k: (raw[k] * mins + pr[k] * PRIOR_MIN) / (mins + PRIOR_MIN) for k in raw}
-    # goals: blend finishing toward xG (finishing is mostly noise)
-    shr["g"] = 0.55 * shr["ixg"] + 0.45 * shr["g"]
+    # goals: xG rate x empirically-Bayes-shrunk finishing multiplier (research digest 01 §6):
+    #   forwards: (G + 64) / (xG + 64) on raw career-window totals (K = 64 xG ~ 775 unblocked attempts)
+    #   defensemen: no repeatable finishing (YoY r ~ -0.03) -> xG only
+    if pos == "D":
+        shr["g"] = shr["ixg"]
+    else:
+        g_tot, xg_tot = (r.I_F_goals * r.w).sum(), (r.I_F_xGoals * r.w).sum()
+        shr["g"] = shr["ixg"] * (g_tot + 64) / (xg_tot + 64)
     return dict(pos=pos, gp=float(r.games_played.sum()), toi=toi, n_min=mins, note="", **shr)
 
 
@@ -181,7 +187,7 @@ def player_probs(rates, team, opp, is_home, team_lam, ratings, opp_goalie_f, toi
     env = team_lam / LEAGUE_GOALS_PER_TEAM
     m = dict(
         SOG=rates["sog"] * toi / 60 * sog_mult,
-        G=rates["g"] * toi / 60 * ratings.loc[opp, "def"] * opp_goalie_f * ha * 1.03,  # +EN goals
+        G=rates["g"] * toi / 60 * ratings.loc[opp, "def"] * opp_goalie_f * ha,  # EN goals already in 'all' rates
         A=rates["a"] * toi / 60 * env,
         PTS=rates["pts"] * toi / 60 * env,
     )
