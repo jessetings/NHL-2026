@@ -161,6 +161,11 @@ def main():
     q["n_hair"] = q.cracks.map(lambda c: sum(1 for s, _ in c if s == "HAIRLINE"))
     q = q.sort_values("score", ascending=False)
 
+    # minimum EV rises with price (favourite-longshot bias; research digest 02 §5)
+    band_min = np.select([q.odds <= -200, q.odds <= 150, q.odds <= 400, q.odds <= 1000], [0.02, 0.03, 0.05, 0.08], 0.12)
+    q.loc[q.ev < band_min, "cracks"] = q.loc[q.ev < band_min, "cracks"].map(
+        lambda c: c + [("FAULT", "EV below the minimum for this odds band (longshot bias buffer)")])
+    q["n_fault"] = q.cracks.map(lambda c: sum(1 for s, _ in c if s == "FAULT"))
     ok = q[(q.n_fault == 0) & (q.n_hair <= 2)].copy()   # 3+ hairlines = crumbling, stays in quarry
     rubble = q[q.n_fault > 0]
     used = set()
@@ -189,9 +194,10 @@ def main():
     share = {"CAPSTONE": 0.30, "FOUNDATION": 0.30, "UPPER COURSE": 0.25, "MIDDLE COURSE": 0.15}
     built["w"] = built.kelly.clip(lower=1e-4) * (0.75 ** built.n_hair)
     built["stake_b"] = built.course.map(share) * BUDGET * built.w / built.groupby("course").w.transform("sum")
-    built["stake_b"] = np.minimum(built.stake_b, np.where(built.implied < 0.15, 0.01, 0.02))
+    # caps per research digest 02 (quarter-Kelly regime): 1.5% per bet (0.5% if longer than +500), 4% per game
+    built["stake_b"] = np.minimum(built.stake_b, np.where(built.implied < 0.17, 0.005, 0.015))
     g = built.groupby("game").stake_b.transform("sum")
-    built["stake_b"] = np.where(g > 0.05, built.stake_b * 0.05 / g, built.stake_b)
+    built["stake_b"] = np.where(g > 0.04, built.stake_b * 0.04 / g, built.stake_b)
 
     def ctx(r):
         bits = []
@@ -266,7 +272,7 @@ def main():
         for lo, hi, lab in ((1, 6, "small"), (6, 25, "medium"), (25, 1e9, "moonshot")):
             b = tk[(tk.x >= lo) & (tk.x < hi)].sort_values(["cracks", "ev"], ascending=[True, False]).head(3)
             for r in b.itertuples():
-                st = 0.0025 if lab != "moonshot" else 0.001
+                st = {"small": 0.002, "medium": 0.001, "moonshot": 0.0005}[lab]  # lottery tier <= ~0.5%/night
                 L.append(f"| {lab} | {r.legs} | {r.x:.1f}x | {r.p:.1%} | {r.ev:+.1%} | {r.cracks} | {st:.2%} |")
     L += ["", f"**Total built exposure:** {built.stake_b.sum():.2%} of bankroll in singles. "
           f"By game: {built.groupby('game').stake_b.sum().round(4).map(lambda x: f'{x:.2%}').to_dict()}", ""]
