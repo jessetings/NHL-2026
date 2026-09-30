@@ -99,10 +99,10 @@ def goalie_factor(name):
     return float(np.clip(f, 0.88, 1.12)), f"GA/xGA {ratio:.3f} over {att:.0f} att"
 
 
-def game_model(home, away, home_goalie, away_goalie, ratings):
+def game_model(home, away, home_goalie, away_goalie, ratings, gf_home=None, gf_away=None):
     """Return team lambdas and ML/total probabilities (regulation Poisson + OT coin)."""
-    gh, _ = goalie_factor(home_goalie)
-    ga, _ = goalie_factor(away_goalie)
+    gh = gf_home if gf_home is not None else goalie_factor(home_goalie)[0]
+    ga = gf_away if gf_away is not None else goalie_factor(away_goalie)[0]
     lam_h = LEAGUE_GOALS_PER_TEAM * ratings.loc[home, "off"] * ratings.loc[away, "def"] * ga * np.sqrt(HOME_ADV)
     lam_a = LEAGUE_GOALS_PER_TEAM * ratings.loc[away, "off"] * ratings.loc[home, "def"] * gh / np.sqrt(HOME_ADV)
     # regulation ~ 94% of goals (rest EN/OT handled via OT step)

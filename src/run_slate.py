@@ -31,6 +31,7 @@ SLUG = {"pittsburgh-penguins": "PIT", "philadelphia-flyers": "PHI", "new-york-is
 GOALIES = {"PHI": "Dan Vladar", "PIT": "Arturs Silovs", "TOR": "Anthony Stolarz",
            "NYI": "Ilya Sorokin", "COL": "Mackenzie Blackwood", "LAK": "Darcy Kuemper"}
 USAGE = {}
+DF_G = {}
 B2B = {"TOR"}   # teams on the 2nd night of a back-to-back (TODO: derive from schedule)
 ROLE_TOI = {"f1": 18.0, "f2": 16.0, "f3": 13.5, "f4": 10.5, "d1": 22.5, "d2": 20.0, "d3": 16.5}
 STAT_MAP = {"shots_onGoal": "SOG", "points": "G", "goals+assists": "PTS", "assists": "A"}
@@ -112,6 +113,53 @@ def market_means(df):
     return out
 
 
+def df_goalies():
+    """Latest DailyFaceoff starters with status, keyed by team abbrev."""
+    import glob as _g
+    import gzip
+    import json
+    abbr = {"Pittsburgh Penguins": "PIT", "Philadelphia Flyers": "PHI", "New York Islanders": "NYI",
+            "Toronto Maple Leafs": "TOR", "Los Angeles Kings": "LAK", "Colorado Avalanche": "COL"}
+    fs = sorted(_g.glob("data/raw/dailyfaceoff/*.json.gz"))
+    out = {}
+    if fs:
+        for g in json.load(gzip.open(fs[-1]))["goalies"] or []:
+            for side in ("home", "away"):
+                t = abbr.get(g[f"{side}TeamName"])
+                if t:
+                    out[t] = (g[f"{side}GoalieName"], g[f"{side}NewsStrengthName"])
+    return out
+
+
+def goalie_mix(team):
+    """Goalie factor for `team`'s goalie; if not Confirmed, mix with the model's alternative by P(start)."""
+    name, status = DF_G.get(team, (GOALIES.get(team), "Unknown"))
+    GOALIES[team] = name
+    f_named = M.goalie_factor(name)[0]
+    if status == "Confirmed":
+        return f_named, f"{name} confirmed"
+    try:
+        from features.goalie_start import predict_next
+        probs = predict_next(team, DATE)
+    except Exception:  # noqa: BLE001
+        probs = {}
+    import duckdb
+    names = {}
+    if probs:
+        ids = ",".join(str(int(i)) for i in probs)
+        q = duckdb.connect().execute(f"select player_id, first||' '||last from 'data/curated/nhl_players.parquet' "
+                                     f"where player_id in ({ids})").fetchall()
+        names = {i: n for i, n in q}
+    p_named = max([p for i, p in probs.items() if M.norm(names.get(i, "")) == M.norm(name)] or [0.0])
+    p_named = max(p_named, 0.80 if status == "Likely" else 0.5)     # DF 'Likely' floor
+    alt = [(p, names.get(i)) for i, p in probs.items() if M.norm(names.get(i, "")) != M.norm(name)]
+    if not alt:
+        return f_named, f"{name} {status.lower()}"
+    _, alt_name = max(alt)
+    f = p_named * f_named + (1 - p_named) * M.goalie_factor(alt_name)[0]
+    return f, f"{name} {status.lower()} (P start {p_named:.0%}; alt {alt_name})"
+
+
 # ------------------------------------------------------------ main
 def main(refresh=False):
     os.makedirs(OUT, exist_ok=True)
@@ -119,6 +167,8 @@ def main(refresh=False):
     df = O.flatten(snap)
     ratings = M.team_ratings()
     ros = roster()
+    global DF_G
+    DF_G = df_goalies()
     global USAGE
     try:
         from features.live import usage
@@ -135,7 +185,9 @@ def main(refresh=False):
     games, glines = {}, []
     for ev_id, g in df.groupby("eventID"):
         h, a = TEAM[g.home.iloc[0]], TEAM[g.away.iloc[0]]
-        gm = M.game_model(h, a, GOALIES[h], GOALIES[a], ratings)
+        gf = {t: goalie_mix(t) for t in (h, a)}
+        gm = M.game_model(h, a, GOALIES[h], GOALIES[a], ratings, gf_home=gf[h][0], gf_away=gf[a][0])
+        gm["goalie_note"] = {t: gf[t][1] for t in (h, a)}
         games[(h, a)] = gm
         gg = g[g.entity.isin(["home", "away", "all"]) & (g.stat == "points") & ~g.alt]
         for _, r in gg.iterrows():

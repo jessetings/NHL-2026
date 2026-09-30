@@ -67,6 +67,34 @@ def evaluate(d):
     return pd.DataFrame(out), lr
 
 
+def predict_next(team, game_date, model=None, train=None):
+    """P(start) for each recent goalie of `team` in its next game on game_date (pregame features only)."""
+    con = duckdb.connect()
+    g = con.execute(f"""
+        select k.playerId as goalie_id, gm.date from '{CUR}/nhl_goalie_game.parquet' k
+        join '{CUR}/nhl_games.parquet' gm using(game_id)
+        where gm.game_type = 2 and k.team = '{team}' and k.starter order by gm.date""").df()
+    if len(g) < 10:
+        return {}
+    g["date"] = pd.to_datetime(g.date)
+    gl, dates = g.goalie_id.values, g.date.values
+    today = np.datetime64(pd.Timestamp(game_date))
+    b2b = int((today - dates[-1]) / np.timedelta64(1, "D") == 1)
+    rows = []
+    for c in set(gl[-20:]):
+        last = np.where(gl == c)[0]
+        rows.append(dict(goalie_id=c, s10=(gl[-10:] == c).mean(), s30=(gl[-30:] == c).mean(), prev=int(gl[-1] == c),
+                         b2b=b2b, prev_b2b=int(gl[-1] == c) * b2b,
+                         starts14=int(((gl == c) & (dates >= today - np.timedelta64(14, "D"))).sum()),
+                         days_since=min((today - dates[last[-1]]) / np.timedelta64(1, "D"), 60)))
+    X_ = pd.DataFrame(rows)
+    if model is None:
+        tr = train if train is not None else pd.read_parquet(f"{CUR}/features/goalie_start_train.parquet")
+        model = LogisticRegression(max_iter=1000).fit(tr[X], tr.y)
+    p = model.predict_proba(X_[X])[:, 1]
+    return dict(zip(X_.goalie_id, p / p.sum()))
+
+
 if __name__ == "__main__":
     d = build()
     r, lr = evaluate(d)
