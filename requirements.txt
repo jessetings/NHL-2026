@@ -1,0 +1,6 @@
+pandas
+numpy
+scipy
+requests
+nhl-api-py
+duckdb
