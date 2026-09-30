@@ -79,9 +79,31 @@ def goalie_status():
     return st
 
 
+SIDE_ROI = None
+
+
+def side_roi(market, book, line, side):
+    """Historical ROI of betting EVERY contract of this kind at the book's pregame close (2026)."""
+    global SIDE_ROI
+    if SIDE_ROI is None:
+        try:
+            SIDE_ROI = pd.read_csv("reports/blanket_side_roi_2026close.csv")
+        except FileNotFoundError:
+            SIDE_ROI = pd.DataFrame(columns=["stat", "book", "line", "side", "n", "roi"])
+    stat = {"SOG": "shots_onGoal", "G": "points", "PTS": "goals+assists", "A": "assists"}[market]
+    x = SIDE_ROI[(SIDE_ROI.stat == stat) & (SIDE_ROI.book == book) & (SIDE_ROI.line == line) & (SIDE_ROI.side == side)]
+    return (float(x.roi.iloc[0]), int(x.n.iloc[0])) if len(x) else (None, 0)
+
+
 def inspect(r, gst, counts):
     """Return list of (severity, tag) cracks."""
     c = []
+    roi, n = side_roi(r.market, r.book, r.line, r.side)
+    if roi is not None and roi < -0.05:
+        c.append(("HAIRLINE", f"public-over tax: every {r.side} of this line at {r.book} returned {roi:+.0%} "
+                              f"at close in 2026 (n={n}); needs a real model edge"))
+    elif roi is not None and roi > 0:
+        c.append(("NOTE", f"tailwind: blanket {r.side}s here returned {roi:+.1%} at close in 2026 (n={n})"))
     opp = r.game.split("@")[0] if r.team == r.game.split("@")[1] else r.game.split("@")[1]
     if r.hist_min < 400:
         c.append(("FAULT" if r.market in ("G", "PTS", "A") else "HAIRLINE",
@@ -183,9 +205,9 @@ def main():
         return "; ".join(bits)
 
     def crack_txt(c):
-        if not c:
-            return "solid stone"
-        return "<br>".join(("🟡 hairline: " if s == "HAIRLINE" else "🔴 FAULT: ") + t for s, t in c)
+        if not [x for x in c if x[0] != "NOTE"]:
+            return "solid stone" + ("<br>" + "<br>".join("🟢 " + t for s, t in c if s == "NOTE") if c else "")
+        return "<br>".join({"HAIRLINE": "🟡 hairline: ", "FAULT": "🔴 FAULT: ", "NOTE": "🟢 "}[s] + t for s, t in c)
 
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     L = [f"# The Pyramid — {OUT.split('/')[-1]}", "",

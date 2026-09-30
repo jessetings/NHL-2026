@@ -59,6 +59,10 @@ def run():
     c["b2b"] = c.b2b.fillna(0)
     c["opp_sa"] = (c.opp_sa_ewm20 - 30) / 3
     c["home"] = c.is_home.astype(float)
+    c["pp_min"] = (c.get("pp_sec_ewm20") / 60 - 1.3).fillna(0)
+    c["pp_share"] = (c.get("pp_share_ewm20") - 0.4).fillna(0)
+    c["ev_min"] = (c.get("ev_sec_ewm20") / 60 - 15).fillna(0) / 3
+    c["toi_trend"] = (c.toi_min_ewm5 - c.toi_min_ewm40).fillna(0) / 2
     rows, bets = [], []
     for st, g in c.groupby("stat"):
         months = sorted(g.ym.unique())
@@ -67,7 +71,7 @@ def run():
             if len(tr) < 3000 or len(te) < 200:
                 continue
             X1 = ["lm"]
-            X2 = ["lm", "ld", "b2b", "home"]
+            X2 = ["lm", "ld", "b2b", "home", "pp_min", "pp_share", "ev_min", "toi_trend"]
             p = {}
             for name, X in (("market_recal", X1), ("stack", X2)):
                 lr = LogisticRegression(C=1.0).fit(tr[X].fillna(0), tr.over_hit)

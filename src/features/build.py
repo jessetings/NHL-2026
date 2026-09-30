@@ -93,6 +93,19 @@ def main():
     st = st.rename(columns={"team": "opp", "goalie_id": "opp_goalie_id", "g_svpct_ewm": "opp_g_svpct_ewm",
                             "g_gp_prior": "opp_g_gp_prior"})
     d = d.merge(st.drop_duplicates(["game_id", "opp"]), on=["game_id", "opp"], how="left")
+    # deployment (2023-24+): EV/PP/PK minutes, lagged EWMAs and PP share of team PP time
+    dep_path = f"{CUR}/features/deployment.parquet"
+    if os.path.exists(dep_path):
+        dep = pd.read_parquet(dep_path)
+        team_pp = dep.groupby(["game_id", "team"]).pp_sec.transform("max")  # ~ team PP time (someone on ice all PP)
+        dep["pp_share"] = np.where(team_pp > 0, dep.pp_sec / team_pp, np.nan)
+        d = d.merge(dep[["game_id", "player_id", "ev_sec", "pp_sec", "pk_sec", "pp_share"]],
+                    on=["game_id", "player_id"], how="left")
+        d = d.sort_values(["player_id", "date", "game_id"]).reset_index(drop=True)
+        g2 = d.groupby("player_id", sort=False)
+        for c in ("ev_sec", "pp_sec", "pk_sec", "pp_share"):
+            for hl in (5, 20):
+                d[f"{c}_ewm{hl}"] = g2[c].transform(lambda s: s.shift(1).ewm(halflife=hl, min_periods=1).mean())
     d.to_parquet(f"{OUT}/player_game.parquet", index=False)
     print(f"player_game features: {len(d):,} rows x {d.shape[1]} cols -> {OUT}/player_game.parquet")
 
