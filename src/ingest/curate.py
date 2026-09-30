@@ -66,7 +66,9 @@ def _pbp(f):
     df = pd.json_normalize(b.get("plays", []))
     if df.empty:
         return df
-    df.columns = [c.replace("details.", "").replace("periodDescriptor.", "period_") for c in df.columns]
+    top = {c for c in df.columns if "." not in c}
+    df.columns = [("d_" + c[8:] if c[8:] in top else c[8:]) if c.startswith("details.")
+                  else c.replace("periodDescriptor.", "period_") for c in df.columns]
     df["game_id"] = b["id"]
     df["home_id"] = b["homeTeam"]["id"]
     df["away_id"] = b["awayTeam"]["id"]
@@ -113,6 +115,26 @@ def _player(f):
     return bio, st
 
 
+KEEP_NUM = {"game_id", "eventId", "period_number", "sortOrder", "home_id", "away_id", "gameId", "playerId",
+            "period", "startTime_sec", "endTime_sec", "duration_sec", "typeCode", "shiftNumber"}
+
+
+def _nhl_part(job):
+    """Worker: parse a chunk of games and write one parquet part (keeps parent memory flat)."""
+    fn, season, i, files = job
+    f = _pbp if fn == "pbp" else _shifts
+    df = pd.concat([f(x) for x in files], ignore_index=True)
+    if df.empty:
+        return 0
+    for c in df.columns:
+        if c not in KEEP_NUM:
+            df[c] = df[c].astype("string")
+    out = f"{CUR}/nhl_{fn}/season={season}"
+    os.makedirs(out, exist_ok=True)
+    df.to_parquet(f"{out}/part-{i:05d}.parquet", index=False)
+    return len(df)
+
+
 def curate_nhl():
     files = sorted(glob.glob(f"{NHL}/boxscore/*/*.json.gz"))
     with ProcessPoolExecutor(6) as ex:
@@ -121,20 +143,15 @@ def curate_nhl():
     write(pd.DataFrame([x for r in res for x in r[1]]), "nhl_skater_game")
     write(pd.DataFrame([x for r in res for x in r[2]]), "nhl_goalie_game")
 
-    for season_dir in sorted(glob.glob(f"{NHL}/play-by-play/*")):
-        s = os.path.basename(season_dir)
-        fs = sorted(glob.glob(f"{season_dir}/*.json.gz"))
-        with ProcessPoolExecutor(6) as ex:
-            dfs = list(ex.map(_pbp, fs, chunksize=25))
-        df = pd.concat(dfs, ignore_index=True)
-        df = df.astype({c: "string" for c in df.columns if df[c].dtype == object})
-        write(df, f"nhl_pbp_{s}")
-    for season_dir in sorted(glob.glob(f"{NHL}/shifts/*")):
-        s = os.path.basename(season_dir)
-        fs = sorted(glob.glob(f"{season_dir}/*.json.gz"))
-        with ProcessPoolExecutor(6) as ex:
-            dfs = list(ex.map(_shifts, fs, chunksize=25))
-        write(pd.concat(dfs, ignore_index=True), f"nhl_shifts_{s}")
+    for kind, fn in (("play-by-play", "pbp"), ("shifts", "shifts")):
+        jobs = []
+        for season_dir in sorted(glob.glob(f"{NHL}/{kind}/*")):
+            s = os.path.basename(season_dir)
+            fs = sorted(glob.glob(f"{season_dir}/*.json.gz"))
+            jobs += [(fn, s, i, fs[i:i + 200]) for i in range(0, len(fs), 200)]
+        with ProcessPoolExecutor(4) as ex:
+            n = sum(ex.map(_nhl_part, jobs))
+        print(f"nhl_{fn}: {n:,} rows in {len(jobs)} parts", flush=True)
     fs = sorted(glob.glob(f"{NHL}/right-rail/*/*.json.gz"))
     if fs:
         with ProcessPoolExecutor(6) as ex:
@@ -200,7 +217,10 @@ def _sgo(f):
                 for i, ln in enumerate([bo] + (bo.get("altLines") or [])):
                     odds.append(dict(base, book=b, alt=i > 0, odds=ln.get("odds"),
                                      line=ln.get("overUnder") or ln.get("spread"),
-                                     updated=ln.get("lastUpdatedAt"), available=ln.get("available")))
+                                     updated=ln.get("lastUpdatedAt"), available=ln.get("available"),
+                                     book_open_odds=ln.get("openOdds"), book_close_odds=ln.get("closeOdds"),
+                                     book_open_line=ln.get("openOverUnder") or ln.get("openSpread"),
+                                     book_close_line=ln.get("closeOverUnder") or ln.get("closeSpread")))
         for per, ents in (e.get("results") or {}).items():
             for ent, stats in (ents or {}).items():
                 for k, v in (stats or {}).items():
@@ -210,23 +230,51 @@ def _sgo(f):
     return ev, odds, res
 
 
+def _sgo_part(f):
+    stem = os.path.basename(f).split(".")[0]
+    ev, odds, res = _sgo(f)
+    if not ev:
+        return 0
+    ev = pd.DataFrame(ev)
+    od = pd.DataFrame(odds)
+    rs = pd.DataFrame(res)
+    if not od.empty:
+        od["odds"] = pd.to_numeric(od.odds, errors="coerce")
+        od["line"] = pd.to_numeric(od.line, errors="coerce")
+        for c in ("book_open_odds", "book_close_odds", "book_open_line", "book_close_line"):
+            od[c] = pd.to_numeric(od[c], errors="coerce")
+        od = od.merge(ev[["eventID", "startsAt"]], on="eventID", how="left")
+        od["pregame"] = pd.to_datetime(od.updated, utc=True, errors="coerce") < \
+            pd.to_datetime(od.startsAt, utc=True, errors="coerce")
+        for c in od.columns:
+            if c not in ("odds", "line", "alt", "pregame", "available", "book_open_odds", "book_close_odds",
+                         "book_open_line", "book_close_line"):
+                od[c] = od[c].astype("string")
+        od["alt"] = od["alt"].astype(bool)
+        od["available"] = od["available"].astype("boolean")
+    for name, df in (("sgo_events", ev), ("sgo_odds", od), ("sgo_results", rs)):
+        if df.empty:
+            continue
+        if name == "sgo_results":
+            df["value"] = df["value"].astype("string")
+        if name == "sgo_events":
+            df = df.astype({c: "string" for c in df.columns if df[c].dtype == object})
+        os.makedirs(f"{CUR}/{name}", exist_ok=True)
+        df.to_parquet(f"{CUR}/{name}/{stem}.parquet", index=False)
+    return len(od)
+
+
 def curate_sgo():
-    fs = sorted(glob.glob("data/raw/sgo_history/*.json.gz"))
-    with ProcessPoolExecutor(4) as ex:
-        res = list(ex.map(_sgo, fs))
-    ev = pd.DataFrame([x for r in res for x in r[0]]).drop_duplicates("eventID", keep="last")
-    write(ev, "sgo_events")
-    od = pd.DataFrame([x for r in res for x in r[1]])
-    od = od.drop_duplicates(["eventID", "oddID", "book", "alt", "line"], keep="last")
-    od["odds"] = pd.to_numeric(od.odds, errors="coerce")
-    od["line"] = pd.to_numeric(od.line, errors="coerce")
-    od = od.merge(ev[["eventID", "startsAt"]], on="eventID", how="left")
-    od["pregame"] = pd.to_datetime(od.updated, utc=True, errors="coerce") < pd.to_datetime(od.startsAt, utc=True)
-    od = od.astype({c: "string" for c in od.columns if od[c].dtype == object})
-    write(od, "sgo_odds")
-    rs = pd.DataFrame([x for r in res for x in r[2]]).drop_duplicates(["eventID", "period", "entity", "stat"], keep="last")
-    rs["value"] = rs["value"].astype("string")
-    write(rs, "sgo_results")
+    # same weekly stems in both dirs; the open/close re-pull supersedes the base pull
+    by_stem = {os.path.basename(f): f for f in sorted(glob.glob("data/raw/sgo_history/*.json.gz"))}
+    by_stem.update({os.path.basename(f): f for f in sorted(glob.glob("data/raw/sgo_history_oc/*.json.gz"))})
+    fs = sorted(by_stem.values())
+    for d in ("sgo_events", "sgo_odds", "sgo_results"):
+        for p in glob.glob(f"{CUR}/{d}/*.parquet"):
+            os.remove(p)
+    with ProcessPoolExecutor(3) as ex:
+        n = sum(ex.map(_sgo_part, fs))
+    print(f"sgo_odds: {n:,} rows in {len(fs)} parts", flush=True)
 
 
 if __name__ == "__main__":

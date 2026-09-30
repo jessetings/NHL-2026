@@ -7,17 +7,22 @@ from common import get, load_env, save_json_gz
 
 RAW = "data/raw/sgo_history"
 START = date(2024, 9, 1)
+# per-book openOdds/closeOdds (close = price at puck drop) exist from ~Jan 2026; alt lines never carry them
+OC_RAW = "data/raw/sgo_history_oc"
+OC_START = date(2025, 12, 14)
 URL = "https://api.sportsgameodds.com/v2/events"
 
 
-def window(d0, d1):
-    path = f"{RAW}/{d0.isoformat()}.json.gz"
+def window(d0, d1, raw=RAW, open_close=False):
+    path = f"{raw}/{d0.isoformat()}.json.gz"
     if os.path.exists(path):
         return "skip", 0
     events, cursor = [], None
     while True:
         params = {"leagueID": "NHL", "startsAfter": f"{d0}T00:00:00Z", "startsBefore": f"{d1}T00:00:00Z",
                   "includeAltLines": "true", "limit": 50}
+        if open_close:
+            params["includeOpenCloseOdds"] = "true"
         if cursor:
             params["cursor"] = cursor
         r = get(URL, params=params, headers={"x-api-key": os.environ["SGO_API_KEY"]}, timeout=180)
@@ -35,11 +40,12 @@ def window(d0, d1):
 
 if __name__ == "__main__":
     load_env()
+    oc = "--open-close" in sys.argv
+    raw, d = (OC_RAW, OC_START) if oc else (RAW, START)
     today = datetime.now(timezone.utc).date()
-    d = START
     while d < today:
         d1 = min(d + timedelta(days=7), today)
-        st, n = window(d, d1)
+        st, n = window(d, d1, raw=raw, open_close=oc)
         print(d, st, n, flush=True)
         d = d1
     sys.exit(0)

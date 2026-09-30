@@ -32,7 +32,7 @@ def norm(s):
 
 def main():
     con = duckdb.connect()
-    ev = con.execute(f"select * from '{CUR}/sgo_events.parquet'").df()
+    ev = con.execute(f"select * from '{CUR}/sgo_events/*.parquet'").df()
     ev["home_abbr"] = ev.home.map(SGO_TEAM)
     ev["away_abbr"] = ev.away.map(SGO_TEAM)
     ev["date_utc"] = pd.to_datetime(ev.startsAt, utc=True)
@@ -46,8 +46,8 @@ def main():
 
     # SGO players with team per event
     sp = con.execute(f"""select r.eventID, r.entity as sgo_player, r.value as sgo_team
-                         from '{CUR}/sgo_results.parquet' r where r.period='_meta'""").df()
-    names = con.execute(f"""select distinct entity, player from '{CUR}/sgo_odds.parquet' where player is not null""").df()
+                         from '{CUR}/sgo_results/*.parquet' r where r.period='_meta'""").df()
+    names = con.execute(f"""select distinct entity, player from '{CUR}/sgo_odds/*.parquet' where player is not null""").df()
     sp = sp.merge(names, left_on="sgo_player", right_on="entity", how="left").merge(evmap, on="eventID")
     sp["team"] = sp.sgo_team.map(SGO_TEAM)
     sp["key"] = sp.player.fillna(sp.sgo_player.str.replace(r"_\d+_NHL$", "", regex=True).str.replace("_", " "))\
@@ -65,9 +65,12 @@ def main():
     pl["last_key"] = pl["last"].fillna("").map(norm)
     miss = miss.assign(last_key=miss.key.str[-8:])
     fb = []
+    groups = {k: g for k, g in pl.groupby(["game_id", "team"])}
     for r in miss.itertuples():
-        cand = pl[(pl.game_id == r.game_id) & (pl.team == r.team)]
-        cand = cand[cand.last_key.map(lambda k: len(k) > 2 and r.key.endswith(k))]
+        cand = groups.get((r.game_id, r.team))
+        if cand is None:
+            continue
+        cand = cand.loc[cand.last_key.map(lambda k: len(k) > 2 and r.key.endswith(k)).astype(bool).values]
         if cand.player_id.nunique() == 1:
             fb.append((r.sgo_player, int(cand.player_id.iloc[0])))
     mp = pd.concat([mp, pd.DataFrame(fb, columns=["sgo_player", "player_id"])], ignore_index=True)

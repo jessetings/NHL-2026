@@ -27,14 +27,14 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     con = duckdb.connect()
     con.execute(f"create view o as select *, {FAMILY} fam, strftime(cast(startsAt as timestamp), '%Y-%m') ym "
-                f"from '{CUR}/sgo_odds.parquet' where period='game'")
+                f"from '{CUR}/sgo_odds/*.parquet' where period='game'")
     con.execute(f"create view m as select * from '{CUR}/map_sgo_event.parquet'")
     # 1. events per month, and how many map to regular/playoff NHL games
     ev = con.execute(f"""
         select strftime(cast(e.startsAt as timestamp), '%Y-%m') ym, count(*) events,
                count(m.game_id) mapped, sum(case when m.game_type=2 then 1 else 0 end) reg,
                sum(case when m.game_type=3 then 1 else 0 end) playoff
-        from '{CUR}/sgo_events.parquet' e left join m using(eventID) group by 1 order by 1""").df()
+        from '{CUR}/sgo_events/*.parquet' e left join m using(eventID) group by 1 order by 1""").df()
     ev.to_csv(f"{OUT}/coverage_events_by_month.csv", index=False)
     print(ev.to_string(index=False))
 
@@ -49,7 +49,7 @@ def main():
           from b where fam not in ('ML','PL') group by all)
         select b.ym, b.book, b.fam,
                count(distinct b.eventID) events,
-               count(*) rows,
+               count(*) n_rows,
                round(avg(case when b.pregame then 1 else 0 end), 3) pregame_share,
                round(avg(case when b.alt then 1 else 0 end), 3) alt_share,
                (select round(avg(case when ns=2 then 1 else 0 end),3) from two t
@@ -75,7 +75,7 @@ def main():
     # 4. settlement coverage: player SOG results present for mapped games
     rs = con.execute(f"""
         select strftime(cast(e.startsAt as timestamp), '%Y-%m') ym, count(distinct r.eventID) events_with_player_sog
-        from '{CUR}/sgo_results.parquet' r join '{CUR}/sgo_events.parquet' e using(eventID)
+        from '{CUR}/sgo_results/*.parquet' r join '{CUR}/sgo_events/*.parquet' e using(eventID)
         where r.period='game' and r.stat='shots_onGoal' and r.entity not in ('home','away') group by 1 order by 1""").df()
     rs.to_csv(f"{OUT}/coverage_settlement.csv", index=False)
     print("\nSettlement (player SOG results) by month:")
