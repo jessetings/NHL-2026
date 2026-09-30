@@ -29,6 +29,7 @@ SLUG = {"pittsburgh-penguins": "PIT", "philadelphia-flyers": "PHI", "new-york-is
         "toronto-maple-leafs": "TOR", "los-angeles-kings": "LAK", "colorado-avalanche": "COL"}
 GOALIES = {"PHI": "Dan Vladar", "PIT": "Arturs Silovs", "TOR": "Anthony Stolarz",
            "NYI": "Ilya Sorokin", "COL": "Mackenzie Blackwood", "LAK": "Darcy Kuemper"}
+B2B = {"TOR"}   # teams on the 2nd night of a back-to-back (TODO: derive from schedule)
 ROLE_TOI = {"f1": 18.0, "f2": 16.0, "f3": 13.5, "f4": 10.5, "d1": 22.5, "d2": 20.0, "d3": 16.5}
 STAT_MAP = {"shots_onGoal": "SOG", "points": "G", "goals+assists": "PTS", "assists": "A"}
 
@@ -162,7 +163,8 @@ def main(refresh=False):
         gm = games[(h, a)]
         lam_team = gm["lam_home"] if is_home else gm["lam_away"]
         opp_gf = gm["goalie_away"] if is_home else gm["goalie_home"]
-        means = M.player_probs(rates, team, opp, is_home, lam_team, ratings, opp_gf, toi_override=toi)
+        means = M.player_probs(rates, team, opp, is_home, lam_team, ratings, opp_gf, toi_override=toi,
+                               own_b2b=team in B2B, opp_b2b=opp in B2B)
         # PP-role adjustment (history may not reflect new unit)
         ppm = {"PP1": 1.06, "PP2": 0.98, "-": 0.92}[pp]
         mean_model = means[mk] * (ppm if mk != "SOG" else (1 + (ppm - 1) / 2))

@@ -179,17 +179,31 @@ def nb_tail(mean, k, alpha=None):
     return float(stats.nbinom.sf(k - 1, n, p))
 
 
-def player_probs(rates, team, opp, is_home, team_lam, ratings, opp_goalie_f, toi_override=None):
+# Matchup elasticities & situational multipliers fitted on 154k player-games (research digest 03 §5):
+#   player SOG ~ (opp SOG-allowed ratio)^0.75; goals/points ~ (opp goals-allowed ratio)^0.57 (we use xGA-based 'def')
+#   home vs away: SOG x1.037, goals/points x1.07; own B2B: SOG -3%, G/P -6.5%; opp B2B: SOG +2.6%, G/P +4%
+SOG_OPP_ELAST = 0.75
+HOME_SOG, HOME_GP = 1.037, 1.07
+B2B_OWN = {"SOG": 0.97, "GP": 0.935}
+B2B_OPP = {"SOG": 1.026, "GP": 1.04}
+
+
+def player_probs(rates, team, opp, is_home, team_lam, ratings, opp_goalie_f, toi_override=None,
+                 own_b2b=False, opp_b2b=False):
     toi = toi_override or rates["toi"]
-    ha = np.sqrt(HOME_ADV) if is_home else 1 / np.sqrt(HOME_ADV)
-    sog_mult = ratings.loc[opp, "sog_against"] * (1.02 if is_home else 0.98)
-    # scoring environment relative to league for this team tonight
+    ha_sog = np.sqrt(HOME_SOG) if is_home else 1 / np.sqrt(HOME_SOG)
+    ha_gp = np.sqrt(HOME_GP) if is_home else 1 / np.sqrt(HOME_GP)
+    lg_sa = ratings["sog_against_raw60"].mean()
+    sog_mult = (ratings.loc[opp, "sog_against_raw60"] / lg_sa) ** SOG_OPP_ELAST * ha_sog
+    gp_rest = (B2B_OWN["GP"] if own_b2b else 1) * (B2B_OPP["GP"] if opp_b2b else 1)
+    sog_rest = (B2B_OWN["SOG"] if own_b2b else 1) * (B2B_OPP["SOG"] if opp_b2b else 1)
+    # scoring environment relative to league for this team tonight (home edge already inside team_lam)
     env = team_lam / LEAGUE_GOALS_PER_TEAM
     m = dict(
-        SOG=rates["sog"] * toi / 60 * sog_mult,
-        G=rates["g"] * toi / 60 * ratings.loc[opp, "def"] * opp_goalie_f * ha,  # EN goals already in 'all' rates
-        A=rates["a"] * toi / 60 * env,
-        PTS=rates["pts"] * toi / 60 * env,
+        SOG=rates["sog"] * toi / 60 * sog_mult * sog_rest,
+        G=rates["g"] * toi / 60 * ratings.loc[opp, "def"] * opp_goalie_f * ha_gp * gp_rest,  # EN in 'all' rates
+        A=rates["a"] * toi / 60 * env * gp_rest,
+        PTS=rates["pts"] * toi / 60 * env * gp_rest,
     )
     return m
 

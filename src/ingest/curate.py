@@ -85,17 +85,25 @@ def _shifts(f):
     df = df[[c for c in keep if c in df.columns]]
     for c in ("startTime", "endTime", "duration"):
         df[c + "_sec"] = df[c].map(toi_sec)
-    return df
+    return df.drop_duplicates(["gameId", "playerId", "period", "startTime_sec", "typeCode"])
 
 
 def _rail(f):
     b = load_json_gz(f)
     gi = b.get("gameInfo", {})
     gid = int(os.path.basename(f).split(".")[0])
-    refs = [x.get("default") for x in gi.get("referees", [])]
-    lines = [x.get("default") for x in gi.get("linesmen", [])]
-    return dict(game_id=gid, referee1=refs[0] if refs else None, referee2=refs[1] if len(refs) > 1 else None,
-                linesman1=lines[0] if lines else None, linesman2=lines[1] if len(lines) > 1 else None)
+
+    def nm(x):
+        return (x.get("fullName") or x.get("name") or {}).get("default") if isinstance(x, dict) else None
+    refs = [nm(x) for x in gi.get("referees", [])]
+    lines = [nm(x) for x in gi.get("linesmen", [])]
+    out = dict(game_id=gid, referee1=refs[0] if refs else None, referee2=refs[1] if len(refs) > 1 else None,
+               linesman1=lines[0] if lines else None, linesman2=lines[1] if len(lines) > 1 else None)
+    for side in ("awayTeam", "homeTeam"):
+        t = gi.get(side, {})
+        out[f"{side[:4]}_coach"] = (t.get("headCoach") or {}).get("default")
+        out[f"{side[:4]}_scratches"] = ",".join(str(x.get("id")) for x in t.get("scratches", []))
+    return out
 
 
 def _player(f):
