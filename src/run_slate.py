@@ -3,6 +3,7 @@
 Usage: python src/run_slate.py [--refresh]
 """
 import os
+import re
 import sys
 from datetime import datetime, timezone
 from functools import lru_cache
@@ -29,6 +30,7 @@ SLUG = {"pittsburgh-penguins": "PIT", "philadelphia-flyers": "PHI", "new-york-is
         "toronto-maple-leafs": "TOR", "los-angeles-kings": "LAK", "colorado-avalanche": "COL"}
 GOALIES = {"PHI": "Dan Vladar", "PIT": "Arturs Silovs", "TOR": "Anthony Stolarz",
            "NYI": "Ilya Sorokin", "COL": "Mackenzie Blackwood", "LAK": "Darcy Kuemper"}
+USAGE = {}
 B2B = {"TOR"}   # teams on the 2nd night of a back-to-back (TODO: derive from schedule)
 ROLE_TOI = {"f1": 18.0, "f2": 16.0, "f3": 13.5, "f4": 10.5, "d1": 22.5, "d2": 20.0, "d3": 16.5}
 STAT_MAP = {"shots_onGoal": "SOG", "points": "G", "goals+assists": "PTS", "assists": "A"}
@@ -117,6 +119,16 @@ def main(refresh=False):
     df = O.flatten(snap)
     ratings = M.team_ratings()
     ros = roster()
+    global USAGE
+    try:
+        from features.live import usage
+        uu = usage()
+        USAGE = {(r["key"], r["last_team"]): r for r in uu.to_dict("records")}
+        uniq = uu.key.value_counts()
+        USAGE.update({r["key"]: r for r in uu[uu.key.map(uniq) == 1].to_dict("records")})
+    except Exception as e:  # noqa: BLE001
+        print("usage projection unavailable:", e)
+        USAGE = {}
     run_ts = datetime.now(timezone.utc).isoformat(timespec="seconds")
 
     # ---------- game models
@@ -159,7 +171,13 @@ def main(refresh=False):
             role, pp, pos = rr.role.iloc[0], rr.pp.iloc[0], rr.pos.iloc[0]
         rates = _rates(M.norm(name), pos)
         role_toi = ROLE_TOI.get(role)
-        toi = 0.5 * rates["toi"] + 0.5 * role_toi if role_toi else rates["toi"]
+        uk = re.sub(r"[^a-z]", "", M.norm(name))
+        u = USAGE.get((uk, team)) or USAGE.get(uk)
+        if u is not None and u["gp"] >= 10:
+            # v2: fitted EWMA-blend projection (OOS MAE 1.87 min), 25% pull toward tonight's DF line role
+            toi = 0.75 * u["toi_proj"] + 0.25 * role_toi if role_toi else u["toi_proj"]
+        else:
+            toi = 0.5 * rates["toi"] + 0.5 * role_toi if role_toi else rates["toi"]
         gm = games[(h, a)]
         lam_team = gm["lam_home"] if is_home else gm["lam_away"]
         opp_gf = gm["goalie_away"] if is_home else gm["goalie_home"]
