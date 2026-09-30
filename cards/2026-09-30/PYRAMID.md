@@ -1,8 +1,8 @@
 # Pyramid Card — 2026-09-30
 
-_Generated 2026-09-30 22:38 UTC. Odds snapshot: sgo_slate_alt_20260930T223657Z.json. Nightly risk budget 10% of bankroll (BASE 50% / MIDDLE 30% / TOP 20%)._
+_Generated 2026-09-30 22:45 UTC. Odds snapshot: sgo_slate_alt_20260930T223657Z.json. Nightly risk budget 10% of bankroll (BASE 50% / MIDDLE 30% / TOP 20%)._
 
-Stake = % of bankroll. **Kill price** = worst odds still worth betting. p = blended probability (40% model, 60% de-vigged market). EV per $1.
+Stake = % of bankroll. **Kill price** = worst odds still worth betting. p = blended probability (40% model, 60% de-vigged market). EV per $1. Full AG / 2+ goals / first-goal / points boards: BOARDS.md
 
 ## BASE — cash-game tier: ~42-60% hit rate, near-even money
 
@@ -37,6 +37,10 @@ Stake = % of bankroll. **Kill price** = worst odds still worth betting. p = blen
 |---|---|---|---|---|---|---|---|---|
 | **Porter Martone 5+ SOG** | PIT@PHI | f1/PP1 | FA +600 | +584 | 17.1% (17% / 17%) | 14.3% | +19.8% | 0.50% |
 | **Tony DeAngelo 4+ SOG** | NYI@TOR | d3/PP2 | DR +650 | +700 | 15.0% (13% / 16%) | 13.3% | +12.5% | 0.50% |
+| **Rickard Rakell 2+ goals** | PIT@PHI | f1/PP1 | FA +2000 | +3418 | 5.3% (6% / 5%) | 4.8% | +12.2% | 0.17% |
+| **Artturi Lehkonen 2+ goals** | LAK@COL | f1/PP2 | FA +2500 | +5701 | 4.2% (5% / 4%) | 3.8% | +9.8% | 0.11% |
+| **Kyle Palmieri 2+ goals** | NYI@TOR | f1/PP1 | FA +2700 | +7518 | 3.8% (4% / 3%) | 3.6% | +6.8% | 0.07% |
+| **William Nylander 3+ pts** | NYI@TOR | f2/PP1 | FA +1000 | +1300 | 9.6% (10% / 10%) | 9.1% | +6.1% | 0.17% |
 
 ## TOP — cross-game parlays (GPP tickets)
 
@@ -58,12 +62,12 @@ Legs are from the tiers above, one per game (independent), so the true probabili
 | 20-60x | Porter Martone 4+ SOG (FA +270) + Nazem Kadri 4+ SOG (FA +325) + Tony DeAngelo 3+ SOG (DR +235) | 52.7x (+5168) | 2.6% | 38.0x | +38.7% | 0.25% |
 | 60x+ (100x-style) | Adrian Kempe 4+ SOG (DR +255) + Porter Martone 5+ SOG (FA +600) + Tony DeAngelo 4+ SOG (DR +650) | 186.4x (+18537) | 0.8% | 124.7x | +49.5% | 0.10% |
 | 60x+ (100x-style) | Porter Martone 4+ SOG (FA +270) + Adrian Kempe 4+ SOG (DR +255) + Tony DeAngelo 4+ SOG (DR +650) | 98.5x (+9751) | 1.5% | 66.4x | +48.4% | 0.10% |
-| 60x+ (100x-style) | Nazem Kadri 4+ SOG (FA +325) + Porter Martone 5+ SOG (FA +600) + Tony DeAngelo 4+ SOG (DR +650) | 223.1x (+22212) | 0.7% | 153.3x | +45.6% | 0.10% |
-| 60x+ (100x-style) | Porter Martone 4+ SOG (FA +270) + Nazem Kadri 4+ SOG (FA +325) + Tony DeAngelo 4+ SOG (DR +650) | 117.9x (+11694) | 1.2% | 81.6x | +44.5% | 0.10% |
+| 60x+ (100x-style) | Porter Martone 5+ SOG (FA +600) + Tony DeAngelo 4+ SOG (DR +650) + Artturi Lehkonen 2+ goals (FA +2500) | 1365.0x (+136400) | 0.1% | 922.0x | +48.0% | 0.10% |
+| 60x+ (100x-style) | Porter Martone 4+ SOG (FA +270) + Tony DeAngelo 4+ SOG (DR +650) + Artturi Lehkonen 2+ goals (FA +2500) | 721.5x (+72050) | 0.2% | 491.0x | +46.9% | 0.10% |
 
 ## Slate context
 
 - Games: 3 with qualifying legs. A 3-game slate caps cross-game parlays at 3 legs, which limits the size of 100x tickets.
-- +EV parlay combinations available: 310 of 310.
+- +EV parlay combinations available: 552 of 552.
 - Best 60x+ ticket hits 2.1% of the time (pays 63x). **100x on the full bankroll is not realistic tonight.** Treat 60x+ tickets as lottery-sized (0.1%).
-- Total staked: singles 9.00% + parlays 3.40% of bankroll.
+- Total staked: singles 9.52% + parlays 3.40% of bankroll.

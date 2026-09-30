@@ -49,9 +49,10 @@ def tiers(pr):
     base = pr[(pr.implied >= 0.42) & (pr.ev >= 0.025) & (pr.m_edge >= -0.01) & (pr.k_edge >= -0.01)]
     mid = pr[(pr.implied >= 0.22) & (pr.implied < 0.42) & (pr.ev >= 0.05) &
              (np.maximum(pr.m_edge, pr.k_edge) >= 0.015) & (np.minimum(pr.m_edge, pr.k_edge) >= -0.01)]
-    top = pr[(pr.implied >= 0.05) & (pr.implied < 0.22) & (pr.ev >= 0.07) & (pr.m_edge >= 0) & (pr.k_edge >= 0)]
+    floor = np.where(pr.market == "G", 0.03, 0.05)   # 2+ goal lottery tickets allowed down to +3200
+    top = pr[(pr.implied >= floor) & (pr.implied < 0.22) & (pr.ev >= 0.06) & (pr.m_edge >= 0) & (pr.k_edge >= -0.002)]
     out = []
-    for name, df, n in (("BASE", base, 8), ("MIDDLE", mid, 10), ("TOP", top, 6)):
+    for name, df, n in (("BASE", base, 8), ("MIDDLE", mid, 10), ("TOP", top, 8)):
         out.append(df.head(n).assign(tier=name))
     return pd.concat(out, ignore_index=True)
 
@@ -105,7 +106,7 @@ def main(budget):
          f"_Generated {ts}. Odds snapshot: {pr.snapshot.iloc[0]}. Nightly risk budget {budget:.0%} of bankroll "
          f"(BASE {TIER_SHARE['BASE']:.0%} / MIDDLE {TIER_SHARE['MIDDLE']:.0%} / TOP {TIER_SHARE['TOP']:.0%})._", "",
          "Stake = % of bankroll. **Kill price** = worst odds still worth betting. p = blended probability "
-         "(40% model, 60% de-vigged market). EV per $1.", ""]
+         "(40% model, 60% de-vigged market). EV per $1. Full AG / 2+ goals / first-goal / points boards: BOARDS.md", ""]
     for t, blurb in (("BASE", "cash-game tier: ~42-60% hit rate, near-even money"),
                      ("MIDDLE", "+140 to +350: justified by model AND market"),
                      ("TOP", "longshot singles: both model and market must agree")):
