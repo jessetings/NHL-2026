@@ -102,7 +102,7 @@ def main(budget):
     tp["stake"] = np.where(tp.payout_x >= 60, 0.001, 0.0025)
 
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    L = [f"# Pyramid Card — {OUT.split('/')[-1]}", "",
+    L = [f"# Raw Materials (the quarry) — {OUT.split('/')[-1]}", "",
          f"_Generated {ts}. Odds snapshot: {pr.snapshot.iloc[0]}. Nightly risk budget {budget:.0%} of bankroll "
          f"(BASE {TIER_SHARE['BASE']:.0%} / MIDDLE {TIER_SHARE['MIDDLE']:.0%} / TOP {TIER_SHARE['TOP']:.0%})._", "",
          "Stake = % of bankroll. **Kill price** = worst odds still worth betting. p = blended probability "
@@ -140,7 +140,7 @@ def main(budget):
            f"**100x on the full bankroll is not realistic tonight.** Treat 60x+ tickets as lottery-sized (0.1%)."
            if not best100.empty else "- No 60x+ ticket from +EV legs tonight: **not a 100x slate.**"),
           f"- Total staked: singles {card.stake.sum():.2%} + parlays {tp.stake.sum():.2%} of bankroll.", ""]
-    open(f"{OUT}/PYRAMID.md", "w").write("\n".join(L))
+    open(f"{OUT}/RAW_MATERIALS.md", "w").write("\n".join(L))
     card.to_csv(f"{OUT}/pyramid_singles.csv", index=False)
     tp.to_csv(f"{OUT}/pyramid_parlays.csv", index=False)
     print("\n".join(L))
