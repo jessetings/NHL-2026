@@ -19,7 +19,7 @@ LEAGUE_GOALS_PER_TEAM = 3.05                     # recent NHL scoring environmen
 HOME_ADV = 1.04
 TEAM_SHRINK = 0.55                               # keep 55% of last-season team signal
 GOALIE_SHRINK = 0.35                             # GSAx/shot credibility for a single goalie
-SOG_VAR_RATIO = 1.20                             # var/mean for player SOG
+SOG_NB_ALPHA = 0.045                             # NB2 alpha for player SOG (fitted, see nb_tail)
 
 NAME_FIX = {"nick robertson": "nicholas robertson", "t.j. hughes": "tj hughes",
             "matt schaefer": "matthew schaefer", "alex laferriere": "alex laferriere"}
@@ -159,12 +159,17 @@ def player_rates(key, pos_hint="F"):
     return dict(pos=pos, gp=float(r.games_played.sum()), toi=toi, n_min=mins, note="", **shr)
 
 
-def nb_tail(mean, k, var_ratio=SOG_VAR_RATIO):
-    """P(X >= k) for negative binomial with var = var_ratio * mean."""
-    if var_ratio <= 1.0001:
+def nb_tail(mean, k, alpha=None):
+    """P(X >= k) for NB2 with var = mean + alpha*mean^2.
+
+    alpha fitted on 177k NHL skater-games 2022-26 (pregame mean): F 0.039, D 0.031; 0.045 adds
+    allowance for pregame mean uncertainty. Empirically SOG is only mildly overdispersed.
+    """
+    a = SOG_NB_ALPHA if alpha is None else alpha
+    if a <= 1e-6:
         return float(stats.poisson.sf(k - 1, mean))
-    p = 1 / var_ratio
-    n = mean * p / (1 - p)
+    n = 1 / a
+    p = n / (n + mean)
     return float(stats.nbinom.sf(k - 1, n, p))
 
 
