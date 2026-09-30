@@ -128,6 +128,10 @@ def main():
     gst = goalie_status()
     ext = pd.DataFrame([hit_rates(h, r.player, r.market, r.line) for r in q.itertuples()], index=q.index)
     q = pd.concat([q, ext], axis=1)
+    # hit rates were computed for the over; flip for unders
+    und = q.side == "under"
+    for c in ("hr_ly", "hr_l10", "hr_car"):
+        q.loc[und, c] = 1 - q.loc[und, c]
     counts = q.player.value_counts().to_dict()
     q["cracks"] = [inspect(r, gst, counts) for r in q.itertuples()]
     q["score"] = [score(r) for r in q.itertuples()]

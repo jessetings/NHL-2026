@@ -37,6 +37,15 @@ def pick_label(r):
 def load():
     pr = pd.read_csv(f"{OUT}/props_all.csv")
     pr = pr[pr.mkt_p.notna() & (pr.decision != "data-check")].copy()
+    # empirical bias correction (SOG overs overstated by de-vigged closes; see src/market/calibration.py)
+    sys.path.insert(0, "src/market")
+    from calibration import adjust
+    for c in ("model_p", "mkt_p", "blend_p"):
+        pr[c] = [adjust(m, s, ln, p) for m, s, ln, p in zip(pr.market, pr.side, pr.line, pr[c])]
+    pr["edge"] = pr.blend_p - pr.implied
+    pr["ev"] = pr.blend_p * pr.odds.map(dec) - 1
+    pr["ceiling"] = (pr.blend_p - 0.025).map(lambda p: amer(1 / p) if p > 0 else None)
+    pr["fair_blend"] = pr.blend_p.map(lambda p: amer(1 / p))
     pr = pr.sort_values("ev", ascending=False).drop_duplicates(["player", "market", "line", "side"])
     pr["m_edge"] = pr.model_p - pr.implied
     pr["k_edge"] = pr.mkt_p - pr.implied
