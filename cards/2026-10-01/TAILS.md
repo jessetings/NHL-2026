@@ -1,6 +1,6 @@
 # Tails Board — 2026-10-01
 
-_Snapshot sgo_slate_alt_20261001T220332Z.json. Simulator v2 (131k sims/game) calibrated to each game's de-vigged total and moneyline. EV at the best DK/FD price. **Tail longshot 'yes'/over sides are where books put the most margin** (hist. first-goal-scorer +4000: −47% ROI; alt total over 11.5 @+3600: −40% EV), so the positive-EV list is usually unders/'no' sides or mid-ladder mispricings._
+_Snapshot sgo_slate_alt_20261001T221058Z.json. Simulator v2 (131k sims/game) calibrated to each game's de-vigged total and moneyline. EV at the best DK/FD price. **Tail longshot 'yes'/over sides are where books put the most margin** (hist. first-goal-scorer +4000: −47% ROI; alt total over 11.5 @+3600: −40% EV), so the positive-EV list is usually unders/'no' sides or mid-ladder mispricings._
 
 ## Best EV (any side)
 

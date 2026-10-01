@@ -261,6 +261,16 @@ def live(date, goalies=None):
     gl_names["key"] = gl_names.gname.map(key)
     lines = M.load_lines()
     slug = {v: k for k, v in SL.SLUG.items()}
+    # tonight's PP units (DailyFaceoff): role changes vs history. Heuristic, NOT backtested (historical PP-unit
+    # labels from shifts leak that game's PP volume): promoted -> PP time >= 60% of the unit's typical
+    # (PP1 ~3.0 min, PP2 ~1.5 min); dropped from both units -> history halved.
+    PP_TYP = {"pp1": 3.0 * 60, "pp2": 1.5 * 60}
+    ppu = {}
+    for tslug, pls in lines.items():
+        for pl in pls:
+            g_ = (pl.get("group") or "")
+            if g_ in PP_TYP:
+                ppu[(tslug, key(pl["name"]))] = g_
     rows = []
     for home, away in games:
         for team, opp, is_home in ((home, away, 1.0), (away, home, 0.0)):
@@ -298,6 +308,13 @@ def live(date, goalies=None):
                               toi_min_ewm15=np.nan, toi_min_ewm40=np.nan, sog60_ewm15=np.nan, sog60_ewm40=np.nan,
                               goals60_ewm15=np.nan, goals60_ewm40=np.nan, assists60_ewm15=np.nan,
                               assists60_ewm40=np.nan, points60_ewm15=np.nan, points60_ewm40=np.nan))
+                unit_pp = ppu.get((slug.get(team), k))
+                for c in ("pp_sec_ewm5", "pp_sec_ewm20"):
+                    if unit_pp:
+                        r[c] = max(r[c] or 0.0, 0.6 * PP_TYP[unit_pp])
+                    elif any(t_ == slug.get(team) for t_, _ in ppu):          # team has DF PP units listed
+                        r[c] = 0.5 * (r[c] or 0.0)
+                r["pp_unit"] = unit_pp or "-"
                 rows.append(r)
     R = pd.DataFrame(rows)
     # linemates from tonight's DailyFaceoff units (same team + same f#/d# group), their next-game EV rates
@@ -305,7 +322,7 @@ def live(date, goalies=None):
     for c, src in (("lm_ev_xg60", "ev_xg60"), ("lm_ev_pts60", "ev_pts60_"), ("lm_ev_sog60", "ev_sog60")):
         R[c] = [R[(R.team == t) & (R.unit == u) & (R.player_id != p)][src].mean() for t, u, p in zip(R.team, R.unit, R.player_id)]
     d = prep(R, lg, live=True)
-    out = d[["player_id", "name", "key", "team", "opp", "is_home", "unit", "gp_prior"]].copy()
+    out = d[["player_id", "name", "key", "team", "opp", "is_home", "unit", "pp_unit", "gp_prior"]].copy()
     for mk, p in P.items():
         if not mk.startswith("_"):
             out[f"mu_{mk}"] = mean(np.array([p.get(n, 0.0) for n in NAMES]), d, mk).values
