@@ -33,3 +33,15 @@ Executable test at DK/FD pregame close, stack edge ≥3 pt:
   - (d) better information: PP/deployment from shifts, confirmed lines, goalie confirmations earlier than the market;
   - (e) correlation and parlay mispricing (needs the simulator).
 - Recent form (L5) predicts next-game SOG worse than long memory (15–40 game half-life): corr 0.42 vs 0.45.
+
+## 4. Timing: open vs close (per-book open/close, 2026-01-17 → 2026-06, same-line contracts)
+- Average open→close price moves are small, ±0.2–0.4 probability points:
+  - Pinnacle assist/points/goal overs get more expensive by about +0.4 pt (sharp over money).
+  - FanDuel SOG overs get cheaper by 0.3 pt; FanDuel SOG unders get more expensive.
+- **Blanket ROI at open vs close differs by at most ±2 pts**: e.g. FD SOG unders −1.7% at open vs −2.6% at close; FD SOG overs −11.3% vs −10.1%.
+  - The public-over tax exists at both open and close.
+  - There is **no blanket timing edge**: what you bet matters far more than when.
+- FanDuel moves the SOG *line itself* (not just price) on 12% of contracts open→close, vs 2–3% at DK/Pinnacle.
+  - Those moves are invisible to same-line comparisons; the live snapshot archive will measure them (H1/H2).
+- Main-line goal overs (SGO "points" stat) at DK/FD returned roughly −31% to −39% blanket ROI.
+  - This likely includes some 2+ goal main lines; still the strongest "avoid" signal in the data.
