@@ -162,10 +162,10 @@ def goalie_mix(team):
     p_named = max(p_named, 0.80 if status == "Likely" else 0.5)     # DF 'Likely' floor
     alt = [(p, names.get(i)) for i, p in probs.items() if M.norm(names.get(i, "")) != M.norm(name)]
     if not alt:
-        return f_named, f"{name} {status.lower()}"
+        return f_named, f"{name} {(status or 'unconfirmed').lower()}"
     _, alt_name = max(alt)
     f = p_named * f_named + (1 - p_named) * M.goalie_factor(alt_name)[0]
-    return f, f"{name} {status.lower()} (P start {p_named:.0%}; alt {alt_name})"
+    return f, f"{name} {(status or 'unconfirmed').lower()} (P start {p_named:.0%}; alt {alt_name})"
 
 
 # ------------------------------------------------------------ main

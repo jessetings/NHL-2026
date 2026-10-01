@@ -1,6 +1,6 @@
 # Raw Materials (the quarry) — 2026-10-01
 
-_Generated 2026-10-01 00:10 UTC. Odds snapshot: sgo_slate_alt_20261001T000957Z.json. Nightly risk budget 10% of bankroll (BASE 50% / MIDDLE 30% / TOP 20%)._
+_Generated 2026-10-01 21:35 UTC. Odds snapshot: sgo_slate_alt_20261001T213504Z.json. Nightly risk budget 10% of bankroll (BASE 50% / MIDDLE 30% / TOP 20%)._
 
 Stake = % of bankroll. **Kill price** = worst odds still worth betting. p = blended probability (40% model, 60% de-vigged market). EV per $1. Full AG / 2+ goals / first-goal / points boards: BOARDS.md
 
@@ -8,33 +8,42 @@ Stake = % of bankroll. **Kill price** = worst odds still worth betting. p = blen
 
 | Pick | Game | Role | Book/price | Kill | p (model / mkt) | Implied | EV | Stake |
 |---|---|---|---|---|---|---|---|---|
-| **Dylan Guenther 1+ pts** | CHI@UTA | f2/PP1 | FA -164 | -192 | 68.2% (68% / 68%) | 62.1% | +9.8% | 1.07% |
-| **Macklin Celebrini U3.5 SOG** | FLA@SJS | f1/PP1 | FA -108 | -117 | 56.4% (63% / 52%) | 51.9% | +8.7% | 0.63% |
-| **Jack Hughes U3.5 SOG** | PHI@NJD | f1/PP1 | FA +112 | +108 | 50.6% (55% / 48%) | 47.2% | +7.3% | 0.44% |
-| **Clayton Keller 1+ pts** | CHI@UTA | f1/PP1 | FA -194 | -213 | 70.6% (74% / 68%) | 66.0% | +6.9% | 0.90% |
-| **Jesper Bratt 1+ pts** | PHI@NJD | f1/PP1 | FA -166 | -174 | 66.0% (63% / 68%) | 62.4% | +5.8% | 0.65% |
-| **Mikhail Sergachev 2+ SOG** | CHI@UTA | d1/PP1 | FA -135 | -139 | 60.7% (64% / 59%) | 57.4% | +5.7% | 0.51% |
-| **Morgan Frost 2+ SOG** | SEA@CGY | f1/PP1 | FA -128 | -130 | 59.0% (60% / 58%) | 56.1% | +5.2% | 0.44% |
-| **Timo Meier U3.5 SOG** | PHI@NJD | f2/PP2 | FA -164 | -161 | 64.1% (67% / 62%) | 62.1% | +3.3% | 0.36% |
+| **Brandon Montour U2.5 SOG** | SEA@CGY | d2/PP2 | DR +115 | +110 | 50.2% (53% / 48%) | 46.5% | +7.9% | 0.48% |
+| **Macklin Celebrini U3.5 SOG** | FLA@SJS | f1/PP1 | DR -125 | -134 | 59.8% (63% / 58%) | 55.6% | +7.7% | 0.66% |
+| **Jake DeBrusk U2.5 SOG** | EDM@VAN | f1/PP1 | FA +108 | +104 | 51.5% (55% / 49%) | 48.1% | +7.1% | 0.45% |
+| **Nikita Kucherov 1+ ast** | TBL@NYR | f1/PP1 | DR -145 | -155 | 63.2% (68% / 60%) | 59.2% | +6.9% | 0.69% |
+| **Brandon Hagel 1+ pts** | TBL@NYR | f2/PP1 | DR -160 | -170 | 65.4% (70% / 62%) | 61.5% | +6.3% | 0.70% |
+| **Alexis Lafrenière U2.5 SOG** | TBL@NYR | f1/PP1 | FA -198 | -212 | 70.5% (74% / 68%) | 66.4% | +6.1% | 0.83% |
+| **Jake Guentzel 1+ pts** | TBL@NYR | f2/PP1 | DR -155 | -162 | 64.4% (68% / 62%) | 60.8% | +5.9% | 0.63% |
+| **Dylan Guenther 1+ pts** | CHI@UTA | f2/PP1 | FA -160 | -164 | 64.6% (67% / 63%) | 61.5% | +5.0% | 0.56% |
 
 ## MIDDLE — +140 to +350: justified by model AND market
 
 | Pick | Game | Role | Book/price | Kill | p (model / mkt) | Implied | EV | Stake |
 |---|---|---|---|---|---|---|---|---|
-| **Dylan Guenther 2+ pts** | CHI@UTA | f2/PP1 | FA +310 | +242 | 31.8% (32% / 32%) | 24.4% | +30.3% | 0.74% |
-| **Clayton Keller 2+ pts** | CHI@UTA | f1/PP1 | FA +255 | +210 | 34.7% (39% / 32%) | 28.2% | +23.2% | 0.69% |
-| **Jesper Bratt 2+ pts** | PHI@NJD | f1/PP1 | FA +300 | +271 | 29.5% (26% / 32%) | 25.0% | +17.9% | 0.45% |
-| **Nick Schmaltz 2+ pts** | CHI@UTA | f1/PP1 | FA +340 | +340 | 25.2% (30% / 22%) | 22.7% | +11.0% | 0.24% |
-| **Mikhail Sergachev 3+ SOG** | CHI@UTA | d1/PP1 | FA +225 | +217 | 34.1% (37% / 32%) | 30.8% | +10.8% | 0.36% |
-| **Joel Farabee 3+ SOG** | SEA@CGY | f2/PP1 | FA +240 | +240 | 31.9% (32% / 32%) | 29.4% | +8.5% | 0.27% |
-| **Morgan Frost 3+ SOG** | SEA@CGY | f1/PP1 | FA +235 | +236 | 32.3% (33% / 32%) | 29.9% | +8.1% | 0.26% |
+| **Dylan Guenther 2+ pts** | CHI@UTA | f2/PP1 | FA +340 | +293 | 27.9% (31% / 26%) | 22.7% | +22.9% | 0.51% |
+| **Nikita Kucherov 2+ ast** | TBL@NYR | f1/PP1 | DR +340 | +294 | 27.9% (33% / 25%) | 22.7% | +22.6% | 0.51% |
+| **Brandon Hagel 2+ pts** | TBL@NYR | f2/PP1 | DR +310 | +278 | 28.9% (34% / 25%) | 24.4% | +18.7% | 0.46% |
+| **Jake Guentzel 2+ pts** | TBL@NYR | f2/PP1 | FA +300 | +297 | 27.7% (31% / 25%) | 25.0% | +10.9% | 0.28% |
+| **Quinn Hughes 2+ ast** | MIN@NSH | d1/PP1 | FA +320 | +326 | 26.0% (28% / 25%) | 23.8% | +9.2% | 0.22% |
+| **Rasmus Dahlin 2+ pts** | BUF@CBJ | d1/PP1 | FA +330 | +337 | 25.4% (26% / 25%) | 23.3% | +9.1% | 0.21% |
+| **Jake DeBrusk 1+ goals** | EDM@VAN | f1/PP1 | FA +240 | +244 | 31.6% (35% / 29%) | 29.4% | +7.3% | 0.23% |
+| **Porter Martone 1+ ast** | PHI@NJD | f1/PP1 | DR +250 | +258 | 30.4% (33% / 29%) | 28.6% | +6.5% | 0.20% |
+| **Victor Hedman 1+ pts** | TBL@NYR | d2/- | DR +180 | +183 | 37.9% (41% / 36%) | 35.7% | +6.0% | 0.25% |
+| **Valeri Nichushkin 1+ goals** | BUF@CBJ | f2/PP2 | FA +330 | +354 | 24.5% (26% / 23%) | 23.3% | +5.4% | 0.12% |
 
 ## TOP — longshot singles: both model and market must agree
 
 | Pick | Game | Role | Book/price | Kill | p (model / mkt) | Implied | EV | Stake |
 |---|---|---|---|---|---|---|---|---|
-| **Dylan Guenther 3+ pts** | CHI@UTA | f2/PP1 | FA +1100 | +1090 | 10.9% (11% / 11%) | 8.3% | +30.8% | 0.50% |
-| **Clayton Keller 3+ pts** | CHI@UTA | f1/PP1 | FA +900 | +878 | 12.7% (15% / 11%) | 10.0% | +27.3% | 0.50% |
+| **Nikita Kucherov 3+ ast** | TBL@NYR | f1/PP1 | DR +1400 | +1470 | 8.9% (11% / 7%) | 6.7% | +33.1% | 0.44% |
+| **Jake Guentzel 2+ goals** | TBL@NYR | f2/PP1 | FA +1700 | +2076 | 7.1% (8% / 6%) | 5.6% | +27.7% | 0.31% |
+| **Sam Reinhart 2+ goals** | FLA@SJS | f1/PP1 | DR +1400 | +1669 | 8.2% (9% / 7%) | 6.7% | +22.3% | 0.30% |
+| **Brandon Hagel 2+ goals** | TBL@NYR | f2/PP1 | DR +1500 | +1860 | 7.6% (10% / 6%) | 6.2% | +21.6% | 0.27% |
+| **Jake DeBrusk 2+ goals** | EDM@VAN | f1/PP1 | FA +2000 | +3067 | 5.7% (7% / 5%) | 4.8% | +18.8% | 0.18% |
+| **Porter Martone 2+ goals** | PHI@NJD | f1/PP1 | DR +2800 | +6537 | 4.0% (5% / 3%) | 3.4% | +16.2% | 0.11% |
+| **Matthew Tkachuk 2+ goals** | FLA@SJS | f2/PP1 | DR +1500 | +2084 | 7.1% (9% / 6%) | 6.2% | +13.3% | 0.17% |
+| **Kirill Kaprizov 2+ goals** | MIN@NSH | f2/PP1 | DR +1000 | +1204 | 10.2% (12% / 9%) | 9.1% | +11.9% | 0.22% |
 
 ## TOP — cross-game parlays (GPP tickets)
 
@@ -42,26 +51,26 @@ Legs are from the tiers above, one per game (independent), so the true probabili
 
 | Band | Ticket | Pays | Hit prob | Fair pays | EV | Stake |
 |---|---|---|---|---|---|---|
-| 2-5x | Dylan Guenther 1+ pts (FA -164) + Macklin Celebrini U3.5 SOG (FA -108) + Jesper Bratt 1+ pts (FA -166) | 5.0x (+397) | 25.4% | 3.9x | +26.3% | 0.25% |
-| 2-5x | Dylan Guenther 1+ pts (FA -164) + Macklin Celebrini U3.5 SOG (FA -108) + Timo Meier U3.5 SOG (FA -164) | 5.0x (+399) | 24.7% | 4.0x | +23.2% | 0.25% |
-| 2-5x | Macklin Celebrini U3.5 SOG (FA -108) + Clayton Keller 1+ pts (FA -194) + Jesper Bratt 1+ pts (FA -166) | 4.7x (+368) | 26.3% | 3.8x | +23.0% | 0.25% |
-| 2-5x | Dylan Guenther 1+ pts (FA -164) + Jesper Bratt 1+ pts (FA -166) + Morgan Frost 2+ SOG (FA -128) | 4.6x (+359) | 26.6% | 3.8x | +22.2% | 0.25% |
-| 5-20x | Dylan Guenther 2+ pts (FA +310) + Jesper Bratt 2+ pts (FA +300) | 16.4x (+1540) | 9.4% | 10.7x | +53.6% | 0.25% |
-| 5-20x | Macklin Celebrini U3.5 SOG (FA -108) + Jack Hughes U3.5 SOG (FA +112) + Dylan Guenther 2+ pts (FA +310) | 16.7x (+1574) | 9.1% | 11.0x | +52.0% | 0.25% |
-| 5-20x | Macklin Celebrini U3.5 SOG (FA -108) + Jesper Bratt 1+ pts (FA -166) + Dylan Guenther 2+ pts (FA +310) | 12.7x (+1165) | 11.8% | 8.4x | +49.9% | 0.25% |
-| 5-20x | Macklin Celebrini U3.5 SOG (FA -108) + Morgan Frost 2+ SOG (FA -128) + Dylan Guenther 2+ pts (FA +310) | 14.1x (+1307) | 10.6% | 9.4x | +48.9% | 0.25% |
-| 20-60x | Macklin Celebrini U3.5 SOG (FA -108) + Dylan Guenther 2+ pts (FA +310) + Jesper Bratt 2+ pts (FA +300) | 31.6x (+3059) | 5.3% | 18.9x | +66.9% | 0.25% |
-| 20-60x | Dylan Guenther 2+ pts (FA +310) + Jesper Bratt 2+ pts (FA +300) + Joel Farabee 3+ SOG (FA +240) | 55.8x (+5476) | 3.0% | 33.5x | +66.6% | 0.25% |
-| 20-60x | Dylan Guenther 2+ pts (FA +310) + Jesper Bratt 2+ pts (FA +300) + Morgan Frost 3+ SOG (FA +235) | 54.9x (+5394) | 3.0% | 33.1x | +66.0% | 0.25% |
-| 20-60x | Morgan Frost 2+ SOG (FA -128) + Dylan Guenther 2+ pts (FA +310) + Jesper Bratt 2+ pts (FA +300) | 29.2x (+2821) | 5.5% | 18.1x | +61.5% | 0.25% |
-| 60x+ (100x-style) | Macklin Celebrini U3.5 SOG (FA -108) + Jesper Bratt 2+ pts (FA +300) + Dylan Guenther 3+ pts (FA +1100) | 92.4x (+9144) | 1.8% | 55.2x | +67.6% | 0.10% |
-| 60x+ (100x-style) | Jesper Bratt 2+ pts (FA +300) + Joel Farabee 3+ SOG (FA +240) + Dylan Guenther 3+ pts (FA +1100) | 163.2x (+16220) | 1.0% | 97.5x | +67.3% | 0.10% |
-| 60x+ (100x-style) | Jesper Bratt 2+ pts (FA +300) + Morgan Frost 3+ SOG (FA +235) + Dylan Guenther 3+ pts (FA +1100) | 160.8x (+15980) | 1.0% | 96.5x | +66.7% | 0.10% |
-| 60x+ (100x-style) | Macklin Celebrini U3.5 SOG (FA -108) + Jesper Bratt 2+ pts (FA +300) + Clayton Keller 3+ pts (FA +900) | 77.0x (+7604) | 2.1% | 47.2x | +63.1% | 0.10% |
+| 2-5x | Macklin Celebrini U3.5 SOG (DR -125) + Nikita Kucherov 1+ ast (DR -145) + Dylan Guenther 1+ pts (FA -160) | 4.9x (+394) | 24.4% | 4.1x | +20.8% | 0.25% |
+| 2-5x | Macklin Celebrini U3.5 SOG (DR -125) + Brandon Hagel 1+ pts (DR -160) + Dylan Guenther 1+ pts (FA -160) | 4.8x (+375) | 25.3% | 4.0x | +20.2% | 0.25% |
+| 2-5x | Macklin Celebrini U3.5 SOG (DR -125) + Alexis Lafrenière U2.5 SOG (FA -198) + Dylan Guenther 1+ pts (FA -160) | 4.4x (+340) | 27.3% | 3.7x | +20.0% | 0.25% |
+| 2-5x | Macklin Celebrini U3.5 SOG (DR -125) + Jake Guentzel 1+ pts (DR -155) + Dylan Guenther 1+ pts (FA -160) | 4.8x (+381) | 24.9% | 4.0x | +19.7% | 0.25% |
+| 5-20x | Dylan Guenther 2+ pts (FA +340) + Nikita Kucherov 2+ ast (DR +340) | 19.4x (+1836) | 7.8% | 12.8x | +50.7% | 0.25% |
+| 5-20x | Dylan Guenther 2+ pts (FA +340) + Brandon Hagel 2+ pts (DR +310) | 18.0x (+1704) | 8.1% | 12.4x | +45.9% | 0.25% |
+| 5-20x | Brandon Montour U2.5 SOG (DR +115) + Macklin Celebrini U3.5 SOG (DR -125) + Dylan Guenther 2+ pts (FA +340) | 17.0x (+1603) | 8.4% | 11.9x | +42.9% | 0.25% |
+| 5-20x | Brandon Montour U2.5 SOG (DR +115) + Macklin Celebrini U3.5 SOG (DR -125) + Nikita Kucherov 2+ ast (DR +340) | 17.0x (+1603) | 8.4% | 11.9x | +42.5% | 0.25% |
+| 20-60x | Brandon Montour U2.5 SOG (DR +115) + Dylan Guenther 2+ pts (FA +340) + Nikita Kucherov 2+ ast (DR +340) | 41.6x (+4062) | 3.9% | 25.6x | +62.7% | 0.25% |
+| 20-60x | Macklin Celebrini U3.5 SOG (DR -125) + Dylan Guenther 2+ pts (FA +340) + Nikita Kucherov 2+ ast (DR +340) | 34.8x (+3385) | 4.7% | 21.5x | +62.3% | 0.25% |
+| 20-60x | Jake DeBrusk U2.5 SOG (FA +108) + Dylan Guenther 2+ pts (FA +340) + Nikita Kucherov 2+ ast (DR +340) | 40.3x (+3927) | 4.0% | 25.0x | +61.4% | 0.25% |
+| 20-60x | Brandon Montour U2.5 SOG (DR +115) + Dylan Guenther 2+ pts (FA +340) + Brandon Hagel 2+ pts (DR +310) | 38.8x (+3779) | 4.1% | 24.6x | +57.5% | 0.25% |
+| 60x+ (100x-style) | Dylan Guenther 2+ pts (FA +340) + Nikita Kucherov 3+ ast (DR +1400) + Sam Reinhart 2+ goals (DR +1400) | 990.0x (+98900) | 0.2% | 495.0x | +100.0% | 0.10% |
+| 60x+ (100x-style) | Dylan Guenther 2+ pts (FA +340) + Nikita Kucherov 3+ ast (DR +1400) + Jake DeBrusk 2+ goals (FA +2000) | 1386.0x (+138500) | 0.1% | 713.2x | +94.3% | 0.10% |
+| 60x+ (100x-style) | Nikita Kucherov 3+ ast (DR +1400) + Sam Reinhart 2+ goals (DR +1400) + Jake DeBrusk 2+ goals (FA +2000) | 4725.0x (+472400) | 0.0% | 2444.3x | +93.3% | 0.10% |
+| 60x+ (100x-style) | Dylan Guenther 2+ pts (FA +340) + Jake Guentzel 2+ goals (FA +1700) + Sam Reinhart 2+ goals (DR +1400) | 1188.0x (+118700) | 0.2% | 618.9x | +92.0% | 0.10% |
 
 ## Slate context
 
-- Games: 4 with qualifying legs. A 3-game slate caps cross-game parlays at 3 legs, which limits the size of 100x tickets.
-- +EV parlay combinations available: 274 of 274.
-- Best 60x+ ticket hits 2.3% of the time (pays 64x). **100x on the full bankroll is not realistic tonight.** Treat 60x+ tickets as lottery-sized (0.1%).
-- Total staked: singles 9.00% + parlays 3.40% of bankroll.
+- Games: 8 with qualifying legs. A 3-game slate caps cross-game parlays at 3 legs, which limits the size of 100x tickets.
+- +EV parlay combinations available: 1634 of 1634.
+- Best 60x+ ticket hits 2.6% of the time (pays 61x). **100x on the full bankroll is not realistic tonight.** Treat 60x+ tickets as lottery-sized (0.1%).
+- Total staked: singles 10.00% + parlays 3.40% of bankroll.
