@@ -33,6 +33,10 @@ DT = 20                     # seconds per step
 # EN / extra-attacker per-60 rates are fit over all goalie-out time (incl. delayed penalties); scale 1.3 matches
 # per-game EN goals (0.376) given the simulated late pulled time.
 EN_SCALE = 1.3
+UNIT_CV = 0.25          # per-game "unit night" variability shared by linemates (v2; calibrated in fit_v2)
+LINEMATE_W = 10.0       # assist weight multiplier for the scorer's forward linemates (calibrated)
+PLAYER_SOG_ALPHA = 0.03 # residual player-level NB dispersion for SOG
+TEAM_SOG_CV = 0.15      # team-level shot-volume variability per game
 N_DEFAULT = 65_536
 
 
@@ -57,10 +61,11 @@ def pull_prob(deficit, remain):
 
 
 def simulate(home, away, n=N_DEFAULT, seed=0, pace_cv=0.03, game_key="g", split_sd=0.08, en_scale=None,
-             cooldown=0.5, cooldown_steps=3):
+             cooldown=0.5, cooldown_steps=3, unit_cv=None):
     """home/away: dict(rate60=goalie-present regulation goals per 60, sog=expected team SOG,
                        players={name: dict(g=goal_share, a=assist_share, s=sog_share)})"""
     rng = np.random.default_rng(_seed(game_key, seed))
+    unit_cv = UNIT_CV if unit_cv is None else unit_cv
     M = state_mult()
     k = 1 / pace_cv ** 2
     pace = rng.gamma(k, 1 / k, n)
@@ -137,40 +142,61 @@ def simulate(home, away, n=N_DEFAULT, seed=0, pace_cv=0.03, game_key="g", split_
                reg_tie=tie, en_goals=h_en + a_en, pulled_sec=pulled_sec, first_team=first)
     for side, team, gp, en, opp_gp in (("home", home, h_gp, h_en, a_gp), ("away", away, a_gp, a_en, h_gp)):
         names = list(team["players"])
+        P = len(names)
         gs = np.array([team["players"][x]["g"] for x in names])
         ash = np.array([team["players"][x]["a"] for x in names])
         ss = np.array([team["players"][x]["s"] for x in names])
-        pg = np.append(gs, max(0.0, 1 - gs.sum()))
-        pg /= pg.sum()
+        # v2: line/pair units with a per-game "unit night" multiplier shared by linemates
+        units = team.get("units") or {}
+        uid = np.full(P, -1)
+        for k, (u, members) in enumerate(units.items()):
+            for mbr in members:
+                if mbr in team["players"]:
+                    uid[names.index(mbr)] = k
+        nu = max(len(units), 1)
+        kk = 1 / unit_cv ** 2
+        UM = rng.gamma(kk, 1 / kk, (n, nu)) if units else np.ones((n, 1))
+        Mp = np.where(uid[None, :] >= 0, UM[:, np.clip(uid, 0, None)], 1.0)          # n x P multipliers
+        other_g = max(0.0, 1 - gs.sum())
+        Wg = np.concatenate([gs[None, :] * Mp, np.full((n, 1), other_g)], axis=1)   # n x (P+1)
+        Wa = np.concatenate([ash[None, :] * Mp, np.full((n, 1), max(0.0, 2 * (1 - ash.sum() / 2)))], axis=1)
+        is_fwd_unit = np.array([u.startswith("f") for u in units] + [False]) if units else np.array([False])
         tot_goals = gp + en
-        G = np.zeros((n, len(names) + 1), np.int16)
-        A = np.zeros((n, len(names) + 1), np.int16)
-        pa = np.append(ash, max(0.0, 2 * (1 - ash.sum() / 2)))
+        G = np.zeros((n, P + 1), np.int16)
+        A = np.zeros((n, P + 1), np.int16)
+        FG = np.full(n, -1, np.int16)
         for gnum in range(1, int(tot_goals.max()) + 1):
             idx = np.where(tot_goals >= gnum)[0]
-            sc = rng.choice(len(pg), size=len(idx), p=pg)
+            w = Wg[idx] / Wg[idx].sum(1, keepdims=True)
+            sc = (rng.random((len(idx), 1)) < w.cumsum(1)).argmax(1)
             G[idx, sc] += 1
             if gnum == 1:
-                FG = np.full(n, -1, np.int16)
                 FG[idx] = sc
+            # assists: linemates of the scorer (same forward unit) get a LINEMATE_W boost
+            if P > 0 and units:
+                sc_unit = np.where(sc < P, uid[np.clip(sc, 0, P - 1)], -1)
+                same = (uid[None, :] == sc_unit[:, None]) & (sc_unit[:, None] >= 0)
+                boost = np.where(same & is_fwd_unit[np.clip(sc_unit, 0, None)][:, None], LINEMATE_W, 1.0)
+            else:
+                boost = 1.0
             for prob in (0.90, 0.65):
                 has = rng.random(len(idx)) < prob
-                w = np.tile(pa, (len(idx), 1))
+                w = Wa[idx].copy()
+                w[:, :P] *= boost
                 w[np.arange(len(idx)), sc] = 0
                 w /= w.sum(1, keepdims=True)
-                cum = w.cumsum(1)
-                pick = (rng.random((len(idx), 1)) < cum).argmax(1)
+                pick = (rng.random((len(idx), 1)) < w.cumsum(1)).argmax(1)
                 A[idx[has], pick[has]] += 1
-        # shots: non-goal SOG ~ NB around (team SOG - team goals), trailing teams shoot more (score effect)
+        # shots: per-player Poisson-gamma, mean = team non-goal SOG x share x unit multiplier x pace x score effect
         mean_ng = max(team["sog"] - team["rate60"], 5.0)
         trail = (res[f"{'away' if side == 'home' else 'home'}_goals"] > res[f"{side}_goals"]).astype(float)
-        mu = mean_ng * pace * (1 + 0.04 * trail)
-        r_nb = 30.0   # compromise: team SOG sd ~7.3 (emp 6.6) vs teammate SOG corr ~0.07 (emp 0.089); v2: line-level allocation
-        ng = rng.poisson(rng.gamma(r_nb, mu / r_nb))
-        ps = np.append(ss, max(0.0, 1 - ss.sum()))
-        ps /= ps.sum()
-        S = rng.multinomial(ng, ps) if False else _multinomial_rows(rng, ng, ps)
-        S = S + G * 1  # every goal was a shot (EN goals count as SOG too)
+        team_shot_night = rng.gamma(1 / TEAM_SOG_CV ** 2, TEAM_SOG_CV ** 2, n)      # shared team shot-volume swing
+        base = mean_ng * pace * (1 + 0.04 * trail) * team_shot_night
+        ps = ss / max(ss.sum(), 1e-9) * min(ss.sum(), 0.97)
+        lam = base[:, None] * ps[None, :] * Mp * rng.gamma(1 / PLAYER_SOG_ALPHA, PLAYER_SOG_ALPHA, (n, P))
+        S_named = rng.poisson(lam)
+        other_ng = rng.poisson(base * max(0.0, 1 - ps.sum()))
+        S = np.concatenate([S_named, other_ng[:, None]], axis=1) + G
         team_sog = S.sum(1)
         res[f"{side}_sog"] = team_sog
         res[f"{side}_gp_goals"] = gp

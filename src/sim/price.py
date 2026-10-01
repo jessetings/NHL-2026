@@ -47,7 +47,20 @@ def team_inputs(pr, game, team, rate60, sog_team):
     if ss > 0.97:
         for v in players.values():
             v["s"] *= 0.97 / ss
-    return dict(rate60=rate60, sog=sog_team, players=players)
+    # v2: forward lines / D pairs from the latest DailyFaceoff snapshot
+    units = {}
+    try:
+        sys.path.insert(0, "src")
+        import model as M
+        import slate as SL
+        slug = {v: k for k, v in SL.SLUG.items()}.get(team)
+        for pl in (M.load_lines().get(slug) or []):
+            g = pl.get("group") or ""
+            if g[:1] in ("f", "d") and g[1:].isdigit() and pl["name"] in players:
+                units.setdefault(g, []).append(pl["name"])
+    except Exception:  # noqa: BLE001
+        units = {}
+    return dict(rate60=rate60, sog=sog_team, players=players, units=units)
 
 
 if __name__ == "__main__":

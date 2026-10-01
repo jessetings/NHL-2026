@@ -43,3 +43,20 @@
 - A persistent pull-state model.
 - Rest-of-team goal dependence.
 - Players without market lines use the model mean (some missing SOG shares, e.g. Foerster).
+
+## v2 (2026-10-01): line-level structure
+- **Forward lines and D pairs** come from DailyFaceoff. Each unit gets a per-game "unit night" multiplier (gamma, cv 0.25) shared by linemates.
+- **Assists** go to the scorer's forward linemates with weight ×10.
+- **Player SOG** is Poisson–gamma: team non-goal SOG × share × unit multiplier × pace × score effect × team shot-night (cv 0.15).
+- **Empirical linemate targets** (2025-26, 12,202 pairs identified from shift co-starts): points corr **0.457**, SOG **0.129**, goals 0.021.
+
+| Correlation | Empirical | v1 | v2 |
+|---|---|---|---|
+| Linemate points | 0.457 | ~0.16 (no line structure) | **0.346** |
+| Linemate SOG | 0.129 | ~0.07 | **0.10–0.12** |
+| Teammate (top-4) points | 0.141 | 0.157 | 0.160 |
+| Teammate (top-4) SOG | 0.089 | ~0.07 | 0.04–0.07 |
+| Team SOG sd | 6.6 | 7.3 | 6.8–7.7 |
+
+- Marginals are unchanged: AG within 0.5 pt of the de-vigged market.
+- **Remaining gap:** linemate points are understated because lines are only partially represented, since players without props are absent from the player list (e.g. Marchenko). v3: include the full dressed roster from the NHL `rosterSpots` with model-based shares.
