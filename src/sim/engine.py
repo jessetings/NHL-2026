@@ -30,9 +30,11 @@ import numpy as np
 
 PARAMS = json.load(open("data/curated/sim/params.json"))
 DT = 20                     # seconds per step
+SMAX = max(int(k.split("|")[1]) for k in PARAMS["rate_by_period_state"])   # score states -SMAX..SMAX
 # EN / extra-attacker per-60 rates are fit over all goalie-out time (incl. delayed penalties); scale 1.3 matches
 # per-game EN goals (0.376) given the simulated late pulled time.
 EN_SCALE = 1.3
+LEAD_DAMP = 0.9         # leader rate x0.9 per goal of lead beyond 2 (fit: |margin|>=5 5.7% vs 5.9%, >=6 1.9% vs 2.0%, 2023-26)
 UNIT_CV = 0.28          # per-game unit multiplier cv (v3 fit: linemate SOG corr 0.129, goals ~0.01-0.02)
 A_PROBS = (0.925, 0.76)    # P(primary), P(secondary) assist per goal: 1.685 A/G (NHL 2022-26, stable)
 A_PER_GOAL = sum(A_PROBS)
@@ -48,9 +50,9 @@ def _seed(key, seed=0):
 
 
 def state_mult():
-    """Multiplier table [period(1-3)][diff -2..2] relative to the overall goalie-present mean."""
+    """Multiplier table [period(1-3)][diff -SMAX..SMAX] relative to the overall goalie-present mean."""
     r = PARAMS["rate_by_period_state"]
-    vals = np.array([[r[f"{p}|{d}"] for d in range(-2, 3)] for p in (1, 2, 3)])
+    vals = np.array([[r[f"{p}|{d}"] for d in range(-SMAX, SMAX + 1)] for p in (1, 2, 3)])
     return vals / np.nanmean(vals)
 
 
@@ -64,11 +66,12 @@ def pull_prob(deficit, remain):
 
 
 def simulate(home, away, n=N_DEFAULT, seed=0, pace_cv=0.03, game_key="g", split_sd=0.08, en_scale=None,
-             cooldown=0.5, cooldown_steps=3, unit_cv=None):
+             cooldown=0.5, cooldown_steps=3, unit_cv=None, lead_damp=None):
     """home/away: dict(rate60=goalie-present regulation goals per 60, sog=expected team SOG,
                        players={name: dict(g=goal_share, a=assist_share, s=sog_share)})"""
     rng = np.random.default_rng(_seed(game_key, seed))
     unit_cv = UNIT_CV if unit_cv is None else unit_cv
+    lead_damp = LEAD_DAMP if lead_damp is None else lead_damp
     M = state_mult()
     k = 1 / pace_cv ** 2
     pace = rng.gamma(k, 1 / k, n)
@@ -86,13 +89,20 @@ def simulate(home, away, n=N_DEFAULT, seed=0, pace_cv=0.03, game_key="g", split_
     cool = np.zeros(n, np.int16)     # steps remaining in post-goal cooldown
     first = np.zeros(n, np.int8)     # 1 = home scored first, 2 = away, 0 = none yet
     pull_cache = {}
+    per_h, per_a = [], []                # cumulative score at the end of P1, P2
     for i in range(steps):
         t = i * DT
+        if t in (1200, 2400):
+            per_h.append(hs.copy()); per_a.append(as_.copy())
         p = min(t // 1200, 2)
         remain = 3600 - t
-        diff = np.clip(hs - as_, -2, 2)
-        mh = M[p, diff + 2]
-        ma = M[p, -diff + 2]
+        diff = np.clip(hs - as_, -SMAX, SMAX)
+        mh = M[p, diff + SMAX]
+        ma = M[p, -diff + SMAX]
+        if lead_damp < 1.0:          # blowout self-limiting: leader's rate x damp^(lead-2) for leads of 3+
+            lead = hs.astype(np.int32) - as_
+            mh = mh * np.where(lead >= 3, lead_damp ** np.clip(lead - 2, 0, 6), 1.0)
+            ma = ma * np.where(-lead >= 3, lead_damp ** np.clip(-lead - 2, 0, 6), 1.0)
         lam_h = home["rate60"] * mh * pace * (1 + split) * DT / 3600
         lam_a = away["rate60"] * ma * pace * (1 - split) * DT / 3600
         if p == 2 and remain <= 360:
@@ -142,7 +152,10 @@ def simulate(home, away, n=N_DEFAULT, seed=0, pace_cv=0.03, game_key="g", split_
     total = hs + as_ + tie.astype(np.int16)          # OT or SO winner adds one to the game total
 
     res = dict(home_goals=hs + ot_home, away_goals=as_ + ot_away, home_win=home_win, total=total,
-               reg_tie=tie, en_goals=h_en + a_en, pulled_sec=pulled_sec, first_team=first)
+               reg_tie=tie, en_goals=h_en + a_en, pulled_sec=pulled_sec, first_team=first,
+               home_p1=per_h[0], away_p1=per_a[0], home_p2=per_h[1] - per_h[0], away_p2=per_a[1] - per_a[0],
+               home_p3=hs - per_h[1], away_p3=as_ - per_a[1], home_reg=hs.copy(), away_reg=as_.copy(),
+               home_final=hs + ot_home + so_home, away_final=as_ + ot_away + (tie & ~decided & ~so_home))
     for side, team, gp, en, opp_gp in (("home", home, h_gp, h_en, a_gp), ("away", away, a_gp, a_en, h_gp)):
         names = list(team["players"])
         P = len(names)

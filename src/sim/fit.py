@@ -1,7 +1,7 @@
 """Fit empirical game-process inputs for the simulator from 2023-26 regular-season play-by-play.
 
 Outputs data/curated/sim/params.json:
-  - league goal rate per 60 (goalie-present, all strengths) by period and team score-state (diff -2..+2)
+  - league goal rate per 60 (goalie-present, all strengths) by period and team score-state (diff -4..+4)
   - home share of goalie-present goals
   - pulled-goalie: hazard of pulling by deficit and seconds remaining (P3), EN goals for/against per 60
   - OT: share of tied games decided in OT, home share of OT winners; shootout home win share
@@ -16,6 +16,9 @@ import pandas as pd
 
 CUR = "data/curated"
 OUT = f"{CUR}/sim"
+
+
+SMAX = 4   # score states -4..+4 (v3: blowout states split out of the old +/-2 bucket)
 
 
 def timeline():
@@ -62,14 +65,39 @@ def fit():
     g_in = gl[~gl.h_out & ~gl.a_out]
     out = {"rate_by_period_state": {}, "n_games": int(seg.game_id.nunique())}
     for p in (1, 2, 3):
-        for d in range(-2, 3):
-            # home team at diff d  + away team at diff d (away perspective diff = -hdiff)
-            exp_h = both_in[(both_in.p == p) & (both_in.hdiff.clip(-2, 2) == d)].dur.sum()
-            exp_a = both_in[(both_in.p == p) & ((-both_in.hdiff).clip(-2, 2) == d)].dur.sum()
-            g_h = ((g_in.p == p) & (g_in.hdiff.clip(-2, 2) == d) & g_in.home_goal).sum()
-            g_a = ((g_in.p == p) & ((-g_in.hdiff).clip(-2, 2) == d) & ~g_in.home_goal).sum()
+        for d in range(-SMAX, SMAX + 1):
+            # home team at diff d  + away team at diff d (away perspective diff = -hdiff); |diff| >= SMAX pooled
+            exp_h = both_in[(both_in.p == p) & (both_in.hdiff.clip(-SMAX, SMAX) == d)].dur.sum()
+            exp_a = both_in[(both_in.p == p) & ((-both_in.hdiff).clip(-SMAX, SMAX) == d)].dur.sum()
+            g_h = ((g_in.p == p) & (g_in.hdiff.clip(-SMAX, SMAX) == d) & g_in.home_goal).sum()
+            g_a = ((g_in.p == p) & ((-g_in.hdiff).clip(-SMAX, SMAX) == d) & ~g_in.home_goal).sum()
             exp = exp_h + exp_a
             out["rate_by_period_state"][f"{p}|{d}"] = float((g_h + g_a) / exp * 3600) if exp > 0 else None
+    # v3: strength-adjusted states. Raw rates at big leads are confounded (teams up 4 are usually much stronger),
+    # so measure goals / expected goals, expected = league rate x team GF ratio x opponent GA ratio (team-season).
+    con = duckdb.connect()
+    gm = con.execute(f"""select game_id, season, home, away, home_score, away_score from '{CUR}/nhl_games.parquet'
+                         where game_type = 2 and home_score is not null""").df()
+    tg = pd.concat([gm.rename(columns={"home": "team", "home_score": "gf", "away_score": "ga"})[["season", "team", "gf", "ga"]],
+                    gm.rename(columns={"away": "team", "away_score": "gf", "home_score": "ga"})[["season", "team", "gf", "ga"]]])
+    ts = tg.groupby(["season", "team"])[["gf", "ga"]].mean()
+    ts = ts / ts.groupby(level=0).transform("mean")
+    gm = gm.join(ts.add_prefix("h_"), on=["season", "home"]).join(ts.add_prefix("a_"), on=["season", "away"])
+    gm["s_home"], gm["s_away"] = gm.h_gf * gm.a_ga, gm.a_gf * gm.h_ga
+    sm = gm.set_index("game_id")[["s_home", "s_away"]]
+    bi = both_in.join(sm, on="game_id")
+    gi = g_in.join(sm, on="game_id")
+    adj, raw_mean = {}, np.nanmean([v for v in out["rate_by_period_state"].values() if v])
+    for p in (1, 2, 3):
+        for d in range(-SMAX, SMAX + 1):
+            hm, am = (bi.p == p) & (bi.hdiff.clip(-SMAX, SMAX) == d), (bi.p == p) & ((-bi.hdiff).clip(-SMAX, SMAX) == d)
+            exp = (bi[hm].dur * bi[hm].s_home).sum() + (bi[am].dur * bi[am].s_away).sum()
+            g_n = ((gi.p == p) & (gi.hdiff.clip(-SMAX, SMAX) == d) & gi.home_goal).sum() + \
+                  ((gi.p == p) & ((-gi.hdiff).clip(-SMAX, SMAX) == d) & ~gi.home_goal).sum()
+            adj[f"{p}|{d}"] = float(g_n / exp * 3600) if exp > 0 else None
+    k = raw_mean / np.nanmean([v for v in adj.values() if v])
+    out["rate_by_period_state_raw"] = out["rate_by_period_state"]
+    out["rate_by_period_state"] = {key: (v * k if v else v) for key, v in adj.items()}
     out["home_share_goalie_present"] = float(g_in.home_goal.mean())
 
     # --- pulled goalie (P3, regulation): hazard of pulling by deficit and time remaining
