@@ -12,6 +12,7 @@ python3 src/boards.py > /dev/null          # AG / 2+ goals / first goal / points
 python3 src/build_pyramid.py > /dev/null   # RAW_MATERIALS.md (the quarry)
 python3 src/construct.py > /dev/null       # PYRAMID.md (inspected + built)
 python3 src/sgp_card.py > /dev/null        # SGP_MENU.md (simulator v1 correlated combos + min quotes)
+python3 src/tails_board.py > /dev/null     # TAILS.md (alt totals / team totals / puck lines vs simulator)
 pgrep -f "snapshot_supervisor.sh" > /dev/null || (setsid nohup ./scripts/snapshot_supervisor.sh 180 >> logs/snapshot.log 2>&1 < /dev/null &)
 pgrep -f "scripts/autosave.sh" > /dev/null || (setsid nohup ./scripts/autosave.sh >> logs/autosave.log 2>&1 < /dev/null &)
 echo "done: cards/*/PYRAMID.md, RAW_MATERIALS.md, BOARDS.md"
