@@ -67,3 +67,16 @@ The sim slightly overstates blowouts (5+ margins); this is a to-do in sim v2. Hi
   - correlation books underprice (SGP);
   - boosts that remove the longshot tax;
   - alt rungs priced off a wrong distribution (H1, prospective).
+
+## 7. Formal test of the opening-shift effect (reconciles with research digest 04)
+Digest 04 found that opening-shift skaters score first-goal share ≈ their share of dressed skaters. Our §2 data agrees: first goals per goal are 0.162 for openers vs 0.164 for others. Starting does **not** raise a player's first-goal propensity relative to his scoring rate. The question that matters for betting is whether **the price** reflects it:
+- **Logistic regression** (all DK/FD FGS bets 2023-26 with shift data), win ~ logit(implied) + opening + D:
+  - opening **+0.212 (SE 0.070)**, t ≈ 3.0;
+  - defenseman −0.16 (SE 0.11);
+  - logit-implied slope 1.11 (>1 means the longshot bias is confirmed).
+- Adding a **history-based** predicted-opener flag: −0.06 (SE 0.09). It adds nothing, so the edge needs the **confirmed** starting lineup.
+- **Game-clustered bootstrap**, opening F vs non-opening F ROI: **+25.5 pts, 95% CI [+7.6, +44.0]**, 1,275 games.
+- **Conclusion:** books price first goal scorer without regard to who takes the opening faceoff.
+  - Confirmed opening forwards outperform their price relative to other players, but are still **≈ −10% ROI blanket**.
+  - **Actionable only with a profit boost or the best price in the +1800–2500 band, after confirming lineups at puck drop.**
+  - Digest 04 independently finds 4th-line and bottom-pair D scorer longshots the most overpriced (FGS −38% / −44%; AG −28% / −21% at the best of 13 books).
