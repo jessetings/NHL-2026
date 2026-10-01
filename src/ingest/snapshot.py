@@ -69,10 +69,10 @@ if __name__ == "__main__":
     a = ap.parse_args()
     load_env()
     while True:
-        ev = pull()
+        try:
+            pull()
+        except Exception as e:  # noqa: BLE001  - never die on a transient API/network error
+            print(f"{datetime.now(timezone.utc):%H:%M:%S}Z pull failed: {e!r}", flush=True)
         if a.once:
-            break
-        # stop once nothing starts within 36h (end of slate window); otherwise keep cadence
-        if not ev:
             break
         time.sleep(a.interval)
