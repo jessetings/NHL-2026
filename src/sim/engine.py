@@ -76,6 +76,7 @@ def simulate(home, away, n=N_DEFAULT, seed=0, pace_cv=0.03, game_key="g", split_
     steps = 3600 // DT
     pulled_sec = np.zeros(n, np.int32)
     cool = np.zeros(n, np.int16)     # steps remaining in post-goal cooldown
+    first = np.zeros(n, np.int8)     # 1 = home scored first, 2 = away, 0 = none yet
     pull_cache = {}
     for i in range(steps):
         t = i * DT
@@ -107,6 +108,11 @@ def simulate(home, away, n=N_DEFAULT, seed=0, pace_cv=0.03, game_key="g", split_
         cool = np.maximum(cool - 1, 0)
         gh = rng.random(n) < lam_h
         ga = rng.random(n) < lam_a
+        none_yet = first == 0
+        both = gh & ga & none_yet
+        coin = rng.random(n) < 0.5
+        first = np.where(none_yet & gh & (~ga | coin), 1, np.where(none_yet & ga & (~gh | ~coin), 2, first)).astype(np.int8)
+        del both
         hs += gh
         as_ += ga
         cool = np.where(gh | ga, cooldown_steps, cool)
@@ -124,10 +130,11 @@ def simulate(home, away, n=N_DEFAULT, seed=0, pace_cv=0.03, game_key="g", split_
     home_win = (hs > as_) | ot_home | so_home
     h_gp += ot_home
     a_gp += ot_away
+    first = np.where((first == 0) & ot_home, 1, np.where((first == 0) & ot_away, 2, first))
     total = hs + as_ + tie.astype(np.int16)          # OT or SO winner adds one to the game total
 
     res = dict(home_goals=hs + ot_home, away_goals=as_ + ot_away, home_win=home_win, total=total,
-               reg_tie=tie, en_goals=h_en + a_en, pulled_sec=pulled_sec)
+               reg_tie=tie, en_goals=h_en + a_en, pulled_sec=pulled_sec, first_team=first)
     for side, team, gp, en, opp_gp in (("home", home, h_gp, h_en, a_gp), ("away", away, a_gp, a_en, h_gp)):
         names = list(team["players"])
         gs = np.array([team["players"][x]["g"] for x in names])
@@ -143,6 +150,9 @@ def simulate(home, away, n=N_DEFAULT, seed=0, pace_cv=0.03, game_key="g", split_
             idx = np.where(tot_goals >= gnum)[0]
             sc = rng.choice(len(pg), size=len(idx), p=pg)
             G[idx, sc] += 1
+            if gnum == 1:
+                FG = np.full(n, -1, np.int16)
+                FG[idx] = sc
             for prob in (0.90, 0.65):
                 has = rng.random(len(idx)) < prob
                 w = np.tile(pa, (len(idx), 1))
@@ -166,6 +176,7 @@ def simulate(home, away, n=N_DEFAULT, seed=0, pace_cv=0.03, game_key="g", split_
         res[f"{side}_gp_goals"] = gp
         for j, x in enumerate(names):
             res[f"G|{x}"] = G[:, j]
+            res[f"FG|{x}"] = (first == (1 if side == "home" else 2)) & (FG == j)
             res[f"A|{x}"] = A[:, j]
             res[f"S|{x}"] = S[:, j]
     res["home_saves"] = res["away_sog"] - res["away_gp_goals"]
