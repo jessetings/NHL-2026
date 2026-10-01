@@ -9,3 +9,7 @@ logs/
 
 # archived live captures are tracked
 !archive/**/*.parquet
+
+# regenerable per-row backtest dumps
+reports/alt_ladders_bets.csv
+reports/sim_backtest_markets.csv
