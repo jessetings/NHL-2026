@@ -240,7 +240,8 @@ def live(date, goalies=None):
     con = duckdb.connect()
     ppl = con.execute(f"""select player_id, first, last from '{CUR}/nhl_players.parquet'""").df()
     ppl["key"] = (ppl["first"].fillna("") + ppl["last"].fillna("")).map(key)
-    lastteam = con.execute(f"""select playerId player_id, arg_max(team, game_id) team from '{CUR}/nhl_skater_game.parquet' group by 1""").df()
+    lastteam = con.execute(f"""select playerId player_id, arg_max(team, game_id) team, arg_max(position, game_id) pos
+                                  from '{CUR}/nhl_skater_game.parquet' group by 1""").df()
     ppl = ppl.merge(lastteam, on="player_id", how="left")
     sp = pd.read_parquet(f"{CUR}/features/shotq_player.parquet")
     sp = sp[sp.game_id == 9_999_999_999]
@@ -268,6 +269,10 @@ def live(date, goalies=None):
                 cand = ppl[ppl.key == k]
                 if len(cand) > 1:
                     cand = cand[cand.team == team] if (cand.team == team).any() else cand
+                if len(cand) > 1:                       # same name on one team: match position to the DF unit
+                    cand = cand[(cand.pos == "D") == (grp[:1] == "d")]
+                if len(cand) != 1:
+                    continue
                 if cand.empty:
                     continue
                 pid = int(cand.player_id.iloc[0])

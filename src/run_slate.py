@@ -196,6 +196,21 @@ def main(refresh=False):
         print("usage projection unavailable:", e)
         USAGE = {}
     run_ts = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    # prop model v2 (strength-split, shot quality, matchup, special teams; validated OOS) -> preferred model mean
+    V2, DUP = {}, set()
+    try:
+        from models import props_v2 as _V2
+        _g = {t: v[0] for t, v in DF_G.items() if v and v[0]}
+        _l = _V2.live(SL.DATE, _g or None)
+        _l = _l[_l.gp_prior >= 10]
+        _l["_k"] = [(re.sub(r"[^a-z]", "", M.norm(n)), t) for n, t in zip(_l.name, _l.team)]
+        DUP = {k for k, c in _l._k.value_counts().items() if c > 1}       # same name twice on one team
+        V2 = {r["_k"]: r for r in _l.to_dict("records") if r["_k"] not in DUP}
+        if DUP:
+            print("name collisions (excluded):", sorted(DUP))
+        print(f"prop model v2: {len(V2)} players")
+    except Exception as e:  # noqa: BLE001
+        print("prop model v2 unavailable, using v1:", e)
 
     # ---------- game models
     games, glines = {}, []
@@ -254,6 +269,10 @@ def main(refresh=False):
         # PP-role adjustment (history may not reflect new unit)
         ppm = {"PP1": 1.06, "PP2": 0.98, "-": 0.92}[pp]
         mean_model = means[mk] * (ppm if mk != "SOG" else (1 + (ppm - 1) / 2))
+        v2 = V2.get((uk, team))
+        model_src = "v1"
+        if v2 is not None and np.isfinite(v2.get(f"mu_{mk}", np.nan)):
+            mean_model, model_src = float(v2[f"mu_{mk}"]), "v2"
         mkt = mm.get((pid, mk))
         for (book, line, side), r in g.groupby(["book", "line", "side"]):
             r = r.iloc[0]
@@ -265,7 +284,8 @@ def main(refresh=False):
                               side=side, line=line, book=book, odds=int(r.odds), alt=bool(r.alt),
                               model_mean=mean_model, mkt_mean=mkt[0] if mkt else np.nan,
                               model_p=pm, mkt_p=pk, toi=toi, hist_min=rates["n_min"], note=rates["note"],
-                              mkt_src=mkt[1] if mkt else ""))
+                              mkt_src=mkt[1] if mkt else "", model_src=model_src,
+                              name_collision=(uk, team) in DUP))
     pr = pd.DataFrame(props)
     # level-calibrate model to market per market type (model is used for relative signal)
     u = pr.drop_duplicates(["player", "market"])
@@ -283,7 +303,7 @@ def main(refresh=False):
     # ceiling = worst price still worth it: blended p minus 2.5pt margin
     pr["ceiling"] = (pr.blend_p - MIN_EDGE).map(lambda p: O.prob_to_american(p) if pd.notna(p) and p > 0 else None)
     pr["decision"] = np.select(
-        [pr.mkt_p.isna(),
+        [pr.mkt_p.isna() | pr.name_collision,
          pr.gap.abs() > DISAGREE,
          (pr.edge >= MIN_EDGE) & (pr.ev >= MIN_EV) & ((pr.implied >= 0.18) | ((pr.market == "G") & (pr.line == 0.5))),
          (pr.edge >= 0.01) & (pr.ev >= 0.02)],

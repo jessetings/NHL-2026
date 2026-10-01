@@ -40,7 +40,7 @@ def norm(s):
 def history():
     con = duckdb.connect()
     d = con.execute(f"""
-        select s.playerId, p.first, p.last, s.team, g.season, g.date, s.sog, s.goals, s.assists, s.points,
+        select s.playerId, p.first, p.last, s.team, s.position, g.season, g.date, s.sog, s.goals, s.assists, s.points,
                s.toi_sec
         from '{CUR}/nhl_skater_game.parquet' s join '{CUR}/nhl_games.parquet' g using(game_id)
         join '{CUR}/nhl_players.parquet' p on p.player_id = s.playerId
@@ -49,10 +49,16 @@ def history():
     return d
 
 
-def hit_rates(h, name, market, line):
+def hit_rates(h, name, market, line, role=None):
     x = h[h.key == norm(name)]
     if x.empty:
         return {}
+    if x.playerId.nunique() > 1:          # same name, different players (e.g. VAN's two Elias Petterssons)
+        isd = str(role or "").startswith("d")
+        y = x[(x.position == "D") == isd] if role else x.iloc[0:0]
+        if y.playerId.nunique() != 1:
+            return {}
+        x = y
     col = STAT[market]
     k = int(np.floor(line)) + 1
     last = x[x.season == 20252026]
@@ -155,7 +161,7 @@ def main():
     q = pd.read_csv(f"{OUT}/pyramid_singles.csv")
     h = history()
     gst = goalie_status()
-    ext = pd.DataFrame([hit_rates(h, r.player, r.market, r.line) for r in q.itertuples()], index=q.index)
+    ext = pd.DataFrame([hit_rates(h, r.player, r.market, r.line, getattr(r, 'role', None)) for r in q.itertuples()], index=q.index)
     q = pd.concat([q, ext], axis=1)
     # hit rates were computed for the over; flip for unders
     und = q.side == "under"
