@@ -114,6 +114,47 @@ def main():
                  f"{r.p_blend:.1%} | {fmt(r.fair)} | {fmt(r.kill)} | {r.ev:+.1%} | {verdict} |")
     L.append("")
 
+    # ---------------- FGS opening-shift watchlist (see docs/findings/2026-10-01_variance_tails_fgs.md)
+    try:
+        import duckdb
+        con = duckdb.connect()
+        op = con.execute("""
+            with opens as (select gameId game_id, playerId player_id, 1 o from 'data/curated/nhl_shifts/*/*.parquet'
+                           where period = 1 and startTime_sec = 0 and typeCode = 517 group by 1, 2),
+                 gp as (select s.game_id, s.playerId player_id, g.date,
+                               row_number() over (partition by s.playerId order by g.date desc) rn
+                        from 'data/curated/nhl_skater_game.parquet' s join 'data/curated/nhl_games.parquet' g using(game_id)
+                        where g.game_type = 2 and g.season >= 20242025)
+            select p.first || ' ' || p.last as player, avg(coalesce(o.o, 0)) open_rate, count(*) n
+            from gp join 'data/curated/nhl_players.parquet' p on p.player_id = gp.player_id
+            left join opens o on o.game_id = gp.game_id and o.player_id = gp.player_id
+            where rn <= 10 and p.position <> 'D' group by 1""").df()
+        hist = pd.read_parquet("data/curated/market/fgs_history.parquet")
+        hist["opening_actual"] = None
+        BUCK = [(0, 1200, "+800-1200", -0.344), (1200, 1800, "+1200-1800", -0.136), (1800, 2500, "+1800-2500", -0.006),
+                (2500, 4000, "+2500-4000", -0.192), (4000, 1e9, "+4000+", -0.428)]   # ROI of CONFIRMED openers
+        w = fg.merge(op, on="player", how="left")
+        w = w[w.open_rate.fillna(0) >= 0.3].sort_values(["game", "open_rate"], ascending=[True, False])
+        L += ["## First goal: opening-shift watchlist", "",
+              "Historical first-goal-scorer ROI is **−36% for forwards not on the opening faceoff** but only "
+              "**−10% for forwards who start** (≈ break-even at +1800–2500). Starting lineups are not public "
+              "pregame: **confirm the opening five at puck drop** (team socials / broadcast). Then bet only with a "
+              "profit boost, or at prices in the +1800–2500 band.", "",
+              "| Player | Game | Opened last 10 | Best FGS | Opener ROI at this price (hist.) | EV if opener + 50% boost |",
+              "|---|---|---|---|---|---|"]
+        for r in w.head(30).itertuples():
+            b = next((x for x in BUCK if x[0] < r.odds <= x[1]), None)
+            if b is None:
+                continue
+            roi = b[3]
+            p_open = (1 + roi) / (1 + r.odds / 100)          # implied hit rate of confirmed openers at this price
+            ev_boost = p_open * (1 + 1.5 * r.odds / 100) - 1
+            L.append(f"| {r.player} | {r.game} | {r.open_rate:.0%} | {r.book[:2].upper()} {r.odds:+d} | "
+                     f"{roi:+.0%} ({b[2]}) | {ev_boost:+.0%} |")
+        L.append("")
+    except Exception as e:  # noqa: BLE001
+        L += [f"_FGS watchlist unavailable: {e}_", ""]
+
     # ---------------- points & assists
     for mk, line, title in (("PTS", 0.5, "1+ point"), ("PTS", 1.5, "2+ points"), ("A", 0.5, "1+ assist")):
         b = pr[(pr.market == mk) & (pr.line == line) & (pr.side == "over")].sort_values("ev", ascending=False)

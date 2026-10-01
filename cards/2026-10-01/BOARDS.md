@@ -104,6 +104,43 @@ Expected total goals (de-vigged market): {'BUF@CBJ': 6.21, 'CHI@UTA': 6.12, 'EDM
 | Mika Zibanejad | TBL@NYR | FA +1400 | 5.6% | 5.6% | 5.6% | +1686 | +2074 | -16.0% | pass |
 | Brayden Point | TBL@NYR | FA +1500 | 5.9% | 5.4% | 5.6% | +1692 | +2083 | -10.7% | pass |
 
+## First goal: opening-shift watchlist
+
+Historical first-goal-scorer ROI is **−36% for forwards not on the opening faceoff** but only **−10% for forwards who start** (≈ break-even at +1800–2500). Starting lineups are not public pregame: **confirm the opening five at puck drop** (team socials / broadcast). Then bet only with a profit boost, or at prices in the +1800–2500 band.
+
+| Player | Game | Opened last 10 | Best FGS | Opener ROI at this price (hist.) | EV if opener + 50% boost |
+|---|---|---|---|---|---|
+| Josh Doan | BUF@CBJ | 50% | FA +1600 | -14% (+1200-1800) | +27% |
+| Zach Benson | BUF@CBJ | 50% | FA +1800 | -14% (+1200-1800) | +27% |
+| Josh Norris | BUF@CBJ | 40% | FA +2200 | -1% (+1800-2500) | +47% |
+| Tage Thompson | BUF@CBJ | 30% | FA +1100 | -34% (+800-1200) | -4% |
+| Clayton Keller | CHI@UTA | 80% | FA +1300 | -14% (+1200-1800) | +27% |
+| Nick Schmaltz | CHI@UTA | 80% | FA +1300 | -14% (+1200-1800) | +27% |
+| Patrick Kane | CHI@UTA | 40% | FA +1500 | -14% (+1200-1800) | +27% |
+| Tyler Bertuzzi | CHI@UTA | 30% | FA +1600 | -14% (+1200-1800) | +27% |
+| Connor McDavid | EDM@VAN | 60% | FA +850 | -34% (+800-1200) | -5% |
+| Jake DeBrusk | EDM@VAN | 60% | FA +1700 | -14% (+1200-1800) | +27% |
+| Leon Draisaitl | EDM@VAN | 50% | FA +850 | -34% (+800-1200) | -5% |
+| Zach Hyman | EDM@VAN | 40% | FA +1200 | -34% (+800-1200) | -4% |
+| Vasily Podkolzin | EDM@VAN | 30% | FA +1600 | -14% (+1200-1800) | +27% |
+| Brady Tkachuk | FLA@SJS | 90% | FA +1000 | -34% (+800-1200) | -5% |
+| Macklin Celebrini | FLA@SJS | 70% | FA +1000 | -34% (+800-1200) | -5% |
+| Will Smith | FLA@SJS | 70% | FA +1600 | -14% (+1200-1800) | +27% |
+| Sam Reinhart | FLA@SJS | 50% | FA +1200 | -34% (+800-1200) | -4% |
+| Matthew Tkachuk | FLA@SJS | 50% | FA +1200 | -34% (+800-1200) | -4% |
+| Aleksander Barkov | FLA@SJS | 50% | FA +1500 | -14% (+1200-1800) | +27% |
+| Carter Verhaeghe | FLA@SJS | 50% | FA +1700 | -14% (+1200-1800) | +27% |
+| Sam Bennett | FLA@SJS | 40% | FA +1700 | -14% (+1200-1800) | +27% |
+| Mason Marchment | FLA@SJS | 40% | FA +1700 | -14% (+1200-1800) | +27% |
+| Steven Stamkos | MIN@NSH | 80% | FA +1300 | -14% (+1200-1800) | +27% |
+| Joel Eriksson Ek | MIN@NSH | 80% | FA +1300 | -14% (+1200-1800) | +27% |
+| Ryan O'Reilly | MIN@NSH | 80% | FA +1700 | -14% (+1200-1800) | +27% |
+| Matt Boldy | MIN@NSH | 70% | FA +1100 | -34% (+800-1200) | -4% |
+| Nico Hischier | PHI@NJD | 60% | FA +1300 | -14% (+1200-1800) | +27% |
+| Timo Meier | PHI@NJD | 60% | FA +1300 | -14% (+1200-1800) | +27% |
+| Tyson Foerster | PHI@NJD | 50% | FA +1800 | -14% (+1200-1800) | +27% |
+| Travis Konecny | PHI@NJD | 40% | FA +1800 | -14% (+1200-1800) | +27% |
+
 ## 1+ point — top 15 by EV
 
 | Player | Game | Role | Best | p_model | p_mkt | p_blend | Fair | Kill | EV |
