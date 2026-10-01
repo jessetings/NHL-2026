@@ -14,6 +14,7 @@ from sklearn.linear_model import LogisticRegression
 
 CUR = "data/curated"
 EPS = 1e-4
+MODEL = __import__("os").environ.get("H3_MODEL", "v1")
 
 
 def logit(p):
@@ -51,7 +52,17 @@ def run():
     c.loc[c.p_mkt.isna() & cons_ok, "p_mkt"] = c.loc[c.p_mkt.isna() & cons_ok, "p_cons"]
     c = c[c.p_mkt.notna() & c.p_mkt.between(0.02, 0.98)]
     c = c[c.line % 1 == 0.5]
-    c["p_model"] = model_prob(c)
+    if MODEL == "v2":       # prop model v2 (strength-split, shot quality, matchup) means
+        pr = pd.read_parquet(f"{CUR}/models/props_v2_pred.parquet").drop(columns=["season"])
+        c = c.merge(pr, on=["game_id", "player_id"], how="inner")
+        k = np.floor(c.line)
+        n = 1 / c.alpha_SOG
+        c["p_model"] = np.select(
+            [c.stat == "shots_onGoal", c.stat == "points", c.stat == "goals+assists", c.stat == "assists"],
+            [stats.nbinom.sf(k, n, n / (n + c.mu_SOG)), stats.poisson.sf(k, c.mu_G),
+             stats.poisson.sf(k, c.mu_PTS), stats.poisson.sf(k, c.mu_A)], np.nan)
+    else:
+        c["p_model"] = model_prob(c)
     c = c[np.isfinite(c.p_model)]
     c["ym"] = pd.to_datetime(c.date).dt.strftime("%Y-%m")
     c["lm"] = logit(c.p_mkt)
@@ -104,8 +115,8 @@ def run():
                                          pnl=(d - 1) if w else -1))
     r = pd.DataFrame(rows)
     b = pd.DataFrame(bets)
-    r.to_csv("reports/h3_folds.csv", index=False)
-    b.to_csv("reports/h3_bets.csv", index=False)
+    r.to_csv(f"reports/h3_folds_{MODEL}.csv", index=False)
+    b.to_csv(f"reports/h3_bets_{MODEL}.csv", index=False)
     agg = r.groupby("stat").apply(lambda d: pd.Series({
         "folds": len(d), "n": d.n.sum(),
         **{f"brier_{k}": np.average(d[f"brier_{k}"], weights=d.n) for k in ("market_raw", "market_recal", "model", "stack")},
