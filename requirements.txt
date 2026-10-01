@@ -1,6 +1,8 @@
-pandas
-numpy
-scipy
-requests
-nhl-api-py
 duckdb
+nhl-api-py
+numpy
+pandas
+pyarrow
+requests
+scikit-learn
+scipy

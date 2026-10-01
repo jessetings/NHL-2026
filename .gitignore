@@ -6,3 +6,6 @@ __pycache__/
 *.parquet
 *.duckdb
 logs/
+
+# archived live captures are tracked
+!archive/**/*.parquet
