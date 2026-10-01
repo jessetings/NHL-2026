@@ -10,6 +10,7 @@ scored, and placed:
   RUBBLE        rejected from the build (fault line), with the reason
 Crack taxonomy: HAIRLINE = minor, size down; FAULT = structural, do not build on it.
 """
+import os
 import gzip
 import json
 import glob
@@ -22,10 +23,11 @@ import duckdb
 import numpy as np
 import pandas as pd
 
-OUT = "cards/2026-09-30"
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import slate as SL  # noqa: E402
+OUT = SL.OUT
 CUR = "data/curated"
-TEAMS_TODAY = {"PIT", "PHI", "NYI", "TOR", "LAK", "COL"}
-B2B = {"TOR"}                               # played 2026-09-29
+B2B = None                                  # derived from the NHL schedule on first use
 BUDGET = 0.10                               # nightly singles budget (aggressive)
 STAT = {"SOG": "sog", "G": "goals", "PTS": "points", "A": "assists"}
 
@@ -68,8 +70,7 @@ def hit_rates(h, name, market, line):
 def goalie_status():
     f = sorted(glob.glob("data/raw/dailyfaceoff/*.json.gz"))[-1]
     d = json.load(gzip.open(f))
-    ab = {"New York Islanders": "NYI", "Toronto Maple Leafs": "TOR", "Pittsburgh Penguins": "PIT",
-          "Philadelphia Flyers": "PHI", "Los Angeles Kings": "LAK", "Colorado Avalanche": "COL"}
+    ab = SL.FULLNAME
     st = {}
     for g in d["goalies"] or []:
         for side in ("home", "away"):
@@ -116,6 +117,12 @@ def inspect(r, gst, counts):
         c.append(("HAIRLINE", "market consensus does not beat the price; edge is model-only"))
     if gst.get(opp, ("", "Confirmed"))[1] != "Confirmed" and r.market in ("G", "PTS", "A"):
         c.append(("HAIRLINE", f"opposing goalie {gst[opp][0]} not confirmed"))
+    global B2B
+    if B2B is None:
+        try:
+            B2B = SL.back_to_back(SL.DATE)
+        except Exception:  # noqa: BLE001
+            B2B = set()
     if r.team in B2B:
         c.append(("HAIRLINE", "team on back-to-back (TOI/legs risk)"))
     if isinstance(r.team_ly, str) and r.team_ly != r.team and r.gp_ly > 0:

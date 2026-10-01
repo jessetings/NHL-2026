@@ -3,6 +3,9 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 export PYTHONPATH=src/ingest
+export SLATE_DATE="${1:-$(TZ=America/New_York date +%F)}"
+echo "slate date: $SLATE_DATE"
+set -a; [ -f .env ] && . ./.env; set +a
 python3 src/ingest/dailyfaceoff.py
 PYTHONPATH=src python3 src/run_slate.py --refresh > /dev/null
 python3 src/boards.py > /dev/null          # AG / 2+ goals / first goal / points / assists

@@ -15,24 +15,21 @@ from scipy import optimize
 sys.path.insert(0, os.path.dirname(__file__))
 import model as M  # noqa: E402
 import odds as O  # noqa: E402
+import slate as SL  # noqa: E402
 
-DATE = "2026-09-30"
-OUT = f"cards/{DATE}"
+DATE = SL.DATE
+OUT = SL.OUT
 MODEL_W = 0.40          # blend weight on our model vs de-vigged market
 MIN_EDGE = 0.025        # absolute prob edge of blended p over best-price implied p
 MIN_EV = 0.05
 DISAGREE = 0.12         # model vs market gap that triggers a data check instead of a bet
 
-TEAM = {"PITTSBURGH_PENGUINS_NHL": "PIT", "PHILADELPHIA_FLYERS_NHL": "PHI",
-        "NEW_YORK_ISLANDERS_NHL": "NYI", "TORONTO_MAPLE_LEAFS_NHL": "TOR",
-        "LOS_ANGELES_KINGS_NHL": "LAK", "COLORADO_AVALANCHE_NHL": "COL"}
-SLUG = {"pittsburgh-penguins": "PIT", "philadelphia-flyers": "PHI", "new-york-islanders": "NYI",
-        "toronto-maple-leafs": "TOR", "los-angeles-kings": "LAK", "colorado-avalanche": "COL"}
-GOALIES = {"PHI": "Dan Vladar", "PIT": "Arturs Silovs", "TOR": "Anthony Stolarz",
-           "NYI": "Ilya Sorokin", "COL": "Mackenzie Blackwood", "LAK": "Darcy Kuemper"}
+TEAM = SL.SGO_TEAM
+SLUG = SL.SLUG
+GOALIES = {}     # filled from the latest DailyFaceoff snapshot
 USAGE = {}
 DF_G = {}
-B2B = {"TOR"}   # teams on the 2nd night of a back-to-back (TODO: derive from schedule)
+B2B = set()     # filled from the NHL schedule (SL.back_to_back)
 ROLE_TOI = {"f1": 18.0, "f2": 16.0, "f3": 13.5, "f4": 10.5, "d1": 22.5, "d2": 20.0, "d3": 16.5}
 STAT_MAP = {"shots_onGoal": "SOG", "points": "G", "goals+assists": "PTS", "assists": "A"}
 
@@ -47,7 +44,9 @@ def roster():
     lines = M.load_lines()
     rows = []
     for slug, plist in lines.items():
-        team = SLUG[slug]
+        team = SLUG.get(slug)
+        if team is None:
+            continue
         groups = {}
         for p in plist:
             groups.setdefault(p["name"], []).append(p["group"])
@@ -118,8 +117,7 @@ def df_goalies():
     import glob as _g
     import gzip
     import json
-    abbr = {"Pittsburgh Penguins": "PIT", "Philadelphia Flyers": "PHI", "New York Islanders": "NYI",
-            "Toronto Maple Leafs": "TOR", "Los Angeles Kings": "LAK", "Colorado Avalanche": "COL"}
+    abbr = SL.FULLNAME
     fs = sorted(_g.glob("data/raw/dailyfaceoff/*.json.gz"))
     out = {}
     if fs:
@@ -134,10 +132,9 @@ def df_goalies():
 def goalie_mix(team):
     """Goalie factor for `team`'s goalie; if not Confirmed, mix with the model's alternative by P(start)."""
     name, status = DF_G.get(team, (GOALIES.get(team), "Unknown"))
-    GOALIES[team] = name
-    f_named = M.goalie_factor(name)[0]
-    if status == "Confirmed":
-        return f_named, f"{name} confirmed"
+    if name and status == "Confirmed":
+        GOALIES[team] = name
+        return M.goalie_factor(name)[0], f"{name} confirmed"
     try:
         from features.goalie_start import predict_next
         probs = predict_next(team, DATE)
@@ -150,6 +147,17 @@ def goalie_mix(team):
         q = duckdb.connect().execute(f"select player_id, first||' '||last from 'data/curated/nhl_players.parquet' "
                                      f"where player_id in ({ids})").fetchall()
         names = {i: n for i, n in q}
+    if not name:
+        # no DailyFaceoff entry yet: model-projected starter, factor mixed over all candidates by P(start)
+        if not probs:
+            GOALIES[team] = None
+            return 1.0, "no goalie info"
+        top = max(probs, key=probs.get)
+        GOALIES[team] = names.get(top)
+        f = sum(p * M.goalie_factor(names.get(i, ""))[0] for i, p in probs.items())
+        return f, f"{names.get(top)} projected by model (P start {probs[top]:.0%})"
+    GOALIES[team] = name
+    f_named = M.goalie_factor(name)[0]
     p_named = max([p for i, p in probs.items() if M.norm(names.get(i, "")) == M.norm(name)] or [0.0])
     p_named = max(p_named, 0.80 if status == "Likely" else 0.5)     # DF 'Likely' floor
     alt = [(p, names.get(i)) for i, p in probs.items() if M.norm(names.get(i, "")) != M.norm(name)]
@@ -163,7 +171,15 @@ def goalie_mix(team):
 # ------------------------------------------------------------ main
 def main(refresh=False):
     os.makedirs(OUT, exist_ok=True)
-    snap = O.fetch_events(list(EVENTS)) if refresh else O.latest_snapshot()
+    print(f"slate {DATE} -> {OUT}")
+    global B2B
+    B2B = SL.back_to_back(DATE)
+    if refresh:
+        O.load_env()
+        evs = SL.events(DATE)
+        snap = O.fetch_events([e["eventID"] for e in evs])
+    else:
+        snap = O.latest_snapshot()
     df = O.flatten(snap)
     ratings = M.team_ratings()
     ros = roster()
@@ -294,7 +310,6 @@ def _rates(key, pos):
     return _RC[key]
 
 
-EVENTS = ["CoOs9Yjc4dUQvLVYUHVk", "prA2CpnWlwW32Xf8ZQzG", "6FQhIE1GXx88gis6oON7"]
 
 if __name__ == "__main__":
     pr, gl, games = main(refresh="--refresh" in sys.argv)

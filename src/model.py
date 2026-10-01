@@ -26,6 +26,7 @@ NAME_FIX = {"nick robertson": "nicholas robertson", "t.j. hughes": "tj hughes",
 
 
 def norm(n):
+    n = "" if n is None else str(n)
     n = unicodedata.normalize("NFKD", n).encode("ascii", "ignore").decode().lower()
     n = re.sub(r"[^a-z .'-]", "", n).strip()
     n = n.replace(".", "").replace("  ", " ")
@@ -216,4 +217,13 @@ def prob_over(market, mean, line):
 
 
 def load_lines():
-    return json.load(open("data/raw/nhl/df_lines.json"))
+    """Latest DailyFaceoff snapshot -> {team-slug: [{name, group}]} for all 32 teams."""
+    import glob
+    import gzip
+    fs = sorted(glob.glob("data/raw/dailyfaceoff/*.json.gz")) or sorted(glob.glob("archive/dailyfaceoff/*.json.gz"))
+    snap = json.load(gzip.open(fs[-1]))
+    out = {}
+    for slug, comb in (snap.get("lines") or {}).items():
+        if comb:
+            out[slug] = [dict(name=p["name"], group=p.get("groupIdentifier")) for p in comb.get("players", [])]
+    return out

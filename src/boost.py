@@ -15,7 +15,9 @@ import pandas as pd
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "market"))
 from calibration import adjust  # noqa: E402
 
-OUT = "cards/2026-09-30"
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import slate as SL  # noqa: E402
+OUT = SL.OUT
 
 
 def load(book):

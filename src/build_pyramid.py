@@ -6,6 +6,7 @@ Parlays: cross-game only (independent legs, priced exactly as product). Same-gam
 until the joint simulator exists.
 Usage: python src/build_pyramid.py [--budget 0.10]
 """
+import os
 import argparse
 import itertools
 import sys
@@ -14,7 +15,9 @@ from datetime import datetime, timezone
 import numpy as np
 import pandas as pd
 
-OUT = "cards/2026-09-30"
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import slate as SL  # noqa: E402
+OUT = SL.OUT
 TIER_SHARE = {"BASE": 0.50, "MIDDLE": 0.30, "TOP": 0.20}
 BET_CAP = {"BASE": 0.020, "MIDDLE": 0.010, "TOP": 0.005}     # of bankroll
 PLAYER_CAP = 0.03

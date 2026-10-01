@@ -6,6 +6,7 @@ Books' SGP quotes are not in our odds feed, so for every combo we publish:
 Legs: anytime goal (top scorers), 1+/2+ points, 3+ SOG, team ML, team 4+ goals, game over 5.5 / under 6.5, FGS.
 Usage: python src/sgp_card.py [--date 2026-09-30]
 """
+import os
 import argparse
 import itertools
 import re
@@ -16,10 +17,10 @@ import pandas as pd
 
 sys.path.insert(0, "src")
 from sim import engine as E  # noqa: E402
+import slate as SL  # noqa: E402
 from sim.price import solve_rates, team_inputs  # noqa: E402
 
 CUSHION = 0.10
-MARKETS = {"NYI@TOR": (6.19, 0.542), "PIT@PHI": (6.26, 0.565), "LAK@COL": (6.29, 0.635)}
 
 
 def amer(x):
@@ -46,7 +47,12 @@ def main(date):
          "_Simulator v1 (validated vs 3,941 games). p_joint is the simulated probability that all legs hit; lift > 1 "
          "means the legs help each other (books' naive multiplication would undervalue the combo). "
          f"**Only bet if the book's SGP quote is at or above 'Min quote'** (fair + {CUSHION:.0%} cushion)._", ""]
-    for game, (tot, ph) in MARKETS.items():
+    import odds as O
+    markets = SL.game_markets(O.flatten(O.latest_snapshot()))
+    games_today = set(pr.game.unique())
+    for game, (tot, ph) in markets.items():
+        if game not in games_today:
+            continue
         away, home = game.split("@")
         rh, ra = solve_rates(tot, ph)
         H = team_inputs(pr, game, home, rh, 29.5)
@@ -88,5 +94,5 @@ def main(date):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--date", default="2026-09-30")
+    ap.add_argument("--date", default=SL.DATE)
     main(ap.parse_args().date)

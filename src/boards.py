@@ -18,10 +18,11 @@ from scipy import optimize, stats
 sys.path.insert(0, os.path.dirname(__file__))
 import odds as O  # noqa: E402
 
-OUT = "cards/2026-09-30"
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import slate as SL  # noqa: E402
+OUT = SL.OUT
 EN_SHARE = 0.03   # share of a player's goal rate that is empty-net (cannot be a first goal)
-TEAM = {"PITTSBURGH_PENGUINS_NHL": "PIT", "PHILADELPHIA_FLYERS_NHL": "PHI", "NEW_YORK_ISLANDERS_NHL": "NYI",
-        "TORONTO_MAPLE_LEAFS_NHL": "TOR", "LOS_ANGELES_KINGS_NHL": "LAK", "COLORADO_AVALANCHE_NHL": "COL"}
+TEAM = SL.SGO_TEAM
 
 
 def dec(o):
