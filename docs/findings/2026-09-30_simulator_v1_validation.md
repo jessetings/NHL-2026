@@ -60,3 +60,31 @@
 
 - Marginals are unchanged: AG within 0.5 pt of the de-vigged market.
 - **Remaining gap:** linemate points are understated because lines are only partially represented, since players without props are absent from the player list (e.g. Marchenko). v3: include the full dressed roster from the NHL `rosterSpots` with model-based shares.
+
+## v3 (2026-10-01): full dressed roster + on-ice assist structure + two marginal bugs fixed
+**Changes**
+- **Full dressed roster**: every DailyFaceoff line/pair member is in the sim. Players without props get model means (shrunk MoneyPuck rates × TOI) but only take the *residual* goal/assist/SOG share left by priced players, so market marginals are untouched (`src/sim/price.py`).
+- **Per-stat fallback**: a player with a goal prop but no assist/SOG prop now gets the model mean for the missing stat. Before, the missing stat was 0. On thin-market slates (Oct 1 preview) that zeroed assists for Kaprizov, Forsberg, Josi and others, so their simulated points were goals-only.
+- **On-ice assist structure**: when a forward scores, assists go to the two linemates (×30) and D (×(1 + 29/3), since a given pair is on ice with a line ~1/3 of the time); other forwards ×1.
+- **Marginal-preserving assists (IPF)**: pre-weights are solved so each player's expected assists equal their target share, whatever the boost structure. The structure then moves correlation only.
+
+**Bugs found**
+1. In v2, D received only **51%** of their target assists, because the linemate boost starved them. **Sim D points/assists legs were underpriced in SGPs.**
+2. The unnamed-pool assist weight `2·(1 − Σa/2)` was too large, so named players got **~78% of target assists** (v1 and v2). The new pool weight is `A_PER_GOAL − Σa`, with A_PER_GOAL = 1.685: NHL assists per goal, stable at 1.683–1.689 for 2022–26. `A_PROBS = (0.925, 0.76)`.
+
+**Validation (Sept 30 inputs, 3 games, 65k sims)**
+
+| Metric | Empirical | v2 | v3 |
+|---|---|---|---|
+| Linemate points corr | 0.457 | 0.29–0.35 | **0.432** |
+| Linemate SOG corr | 0.129 | 0.08–0.12 | **0.129** |
+| Linemate goals corr | 0.021 | 0.008 | 0.010 |
+| Top-4 teammate points | 0.141 | 0.16 | 0.190 (slightly high) |
+| Top-4 teammate SOG | 0.089 | 0.04–0.07 | 0.058 |
+| Team SOG sd | 6.6 (incl. between-game mean variation) | 6.8–7.7 | 7.2 |
+| Assists sim/target (D / F) | 1.00 | **0.51 / 1.08** | **0.99 / 1.00** |
+| AG sim − de-vigged market | 0 | −0.009 | −0.012 |
+| 2+ goals sim − market | 0 | — | −0.001 |
+| 1+ point sim − market | 0 | — | −0.019 (consistent with the public-over tax on points overs) |
+
+Knobs: `LINEMATE_W=30`, `LINEMATE_D_FRAC=1/3`, `UNIT_CV=0.28`, `TEAM_SOG_CV=0.13`.

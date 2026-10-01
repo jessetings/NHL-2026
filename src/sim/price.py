@@ -1,4 +1,4 @@
-"""Per-game calibration + pricing with simulator v1.
+"""Per-game calibration + pricing with the simulator (v3: full dressed roster).
 
 solve_rates(): find home/away goalie-present rates so the simulated mean total and P(home win) match the
 de-vigged market (total mean, home ML). Player inputs from props_all.csv (market-implied means):
@@ -28,6 +28,34 @@ def solve_rates(total_mean, p_home, n=16384, key="solve", iters=8):
     return base * np.exp(lr), base * np.exp(-lr)
 
 
+def _lines(team):
+    sys.path.insert(0, "src")
+    import model as M
+    import slate as SL
+    slug = {v: k for k, v in SL.SLUG.items()}.get(team)
+    return M.load_lines().get(slug) or []
+
+
+def _roster(team):
+    """Dressed skaters from the latest DailyFaceoff lines (forward lines f1-f4, D pairs d1-d3)."""
+    try:
+        return [p["name"] for p in _lines(team) if (p.get("group") or "")[:1] in ("f", "d")
+                and (p.get("group") or "")[1:].isdigit()]
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def _model_means(name):
+    """League-neutral per-game means (G, A, SOG) from shrunk MoneyPuck rates x projected TOI."""
+    try:
+        import model as M
+        r = M.player_rates(M.norm(name))
+    except Exception:  # noqa: BLE001
+        return None
+    toi = r["toi"]
+    return dict(G=r["g"] * toi / 60, A=r["a"] * toi / 60, SOG=r["sog"] * toi / 60)
+
+
 def team_inputs(pr, game, team, rate60, sog_team):
     t = pr[(pr.game == game) & (pr.team == team)]
     tt = t.drop_duplicates(["player", "market"]).copy()
@@ -36,9 +64,27 @@ def team_inputs(pr, game, team, rate60, sog_team):
     goals_team = rate60 * 1.03
     players = {}
     for p, r in means.iterrows():
-        players[p] = dict(g=float(np.nan_to_num(r.get("G", 0)) / goals_team),
-                          a=float(np.nan_to_num(r.get("A", 0)) / goals_team),
-                          s=float(np.nan_to_num(r.get("SOG", 0)) / sog_team))
+        v = {m: r.get(m, np.nan) for m in ("G", "A", "SOG")}
+        if any(pd.isna(x) for x in v.values()):          # market missing for this stat -> model mean
+            mm = _model_means(p) or {}
+            v = {m: (x if not pd.isna(x) else mm.get(m, 0.0)) for m, x in v.items()}
+        players[p] = dict(g=float(v["G"]) / goals_team, a=float(v["A"]) / goals_team, s=float(v["SOG"]) / sog_team)
+    # v3: fill the dressed roster (DailyFaceoff lines) with model-based shares for players without props,
+    # so every forward line / D pair is complete (linemate assist structure needs all members present)
+    # Fill players only take the RESIDUAL share left by priced players (market marginals stay untouched).
+    fill = {}
+    for name in _roster(team):
+        if name not in players:
+            mm = _model_means(name)
+            if mm is not None:
+                fill[name] = dict(g=mm["G"] / goals_team, a=mm["A"] / goals_team, s=mm["SOG"] / sog_team)
+    for k, cap in (("g", 0.95), ("a", 1.50), ("s", 0.97)):
+        resid = max(0.0, cap - sum(v[k] for v in players.values()))
+        tot = sum(v[k] for v in fill.values())
+        f = min(1.0, resid / tot) if tot > 0 else 0.0
+        for v in fill.values():
+            v[k] *= f
+    players.update(fill)
     gs = sum(v["g"] for v in players.values())
     if gs > 0.95:
         for v in players.values():
@@ -50,11 +96,7 @@ def team_inputs(pr, game, team, rate60, sog_team):
     # v2: forward lines / D pairs from the latest DailyFaceoff snapshot
     units = {}
     try:
-        sys.path.insert(0, "src")
-        import model as M
-        import slate as SL
-        slug = {v: k for k, v in SL.SLUG.items()}.get(team)
-        for pl in (M.load_lines().get(slug) or []):
+        for pl in _lines(team):
             g = pl.get("group") or ""
             if g[:1] in ("f", "d") and g[1:].isdigit() and pl["name"] in players:
                 units.setdefault(g, []).append(pl["name"])

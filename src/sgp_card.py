@@ -44,7 +44,7 @@ def legs_for(r, H, A, home, away):
 def main(date):
     pr = pd.read_csv(f"cards/{date}/props_all.csv")
     L = [f"# Same-Game Parlay Menu — {date}", "",
-         "_Simulator v1 (validated vs 3,941 games). p_joint is the simulated probability that all legs hit; lift > 1 "
+         "_Simulator v3 (validated vs 3,941 games; full dressed roster, on-ice assist structure). p_joint is the simulated probability that all legs hit; lift > 1 "
          "means the legs help each other (books' naive multiplication would undervalue the combo). "
          f"**Only bet if the book's SGP quote is at or above 'Min quote'** (fair + {CUSHION:.0%} cushion)._", ""]
     import odds as O

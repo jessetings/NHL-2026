@@ -33,10 +33,13 @@ DT = 20                     # seconds per step
 # EN / extra-attacker per-60 rates are fit over all goalie-out time (incl. delayed penalties); scale 1.3 matches
 # per-game EN goals (0.376) given the simulated late pulled time.
 EN_SCALE = 1.3
-UNIT_CV = 0.25          # per-game "unit night" variability shared by linemates (v2; calibrated in fit_v2)
-LINEMATE_W = 10.0       # assist weight multiplier for the scorer's forward linemates (calibrated)
+UNIT_CV = 0.28          # per-game unit multiplier cv (v3 fit: linemate SOG corr 0.129, goals ~0.01-0.02)
+A_PROBS = (0.925, 0.76)    # P(primary), P(secondary) assist per goal: 1.685 A/G (NHL 2022-26, stable)
+A_PER_GOAL = sum(A_PROBS)
+LINEMATE_D_FRAC = 1 / 3  # share of the linemate boost given to D (on-ice with a given line ~1/3 of the time)
+LINEMATE_W = 30.0       # on-ice assist weight for the scorer's forward linemates (v3 fit: linemate pts corr)
 PLAYER_SOG_ALPHA = 0.03 # residual player-level NB dispersion for SOG
-TEAM_SOG_CV = 0.15      # team-level shot-volume variability per game
+TEAM_SOG_CV = 0.13      # team-level shot-volume variability per game (v3 refit with UNIT_CV)
 N_DEFAULT = 65_536
 
 
@@ -159,8 +162,28 @@ def simulate(home, away, n=N_DEFAULT, seed=0, pace_cv=0.03, game_key="g", split_
         Mp = np.where(uid[None, :] >= 0, UM[:, np.clip(uid, 0, None)], 1.0)          # n x P multipliers
         other_g = max(0.0, 1 - gs.sum())
         Wg = np.concatenate([gs[None, :] * Mp, np.full((n, 1), other_g)], axis=1)   # n x (P+1)
-        Wa = np.concatenate([ash[None, :] * Mp, np.full((n, 1), max(0.0, 2 * (1 - ash.sum() / 2)))], axis=1)
+        Wa = np.concatenate([ash[None, :] * Mp, np.full((n, 1), max(0.02, A_PER_GOAL - ash.sum()))], axis=1)
+        is_d_player = np.array([uid[j] >= 0 and list(units)[uid[j]].startswith("d") for j in range(P)], bool)
         is_fwd_unit = np.array([u.startswith("f") for u in units] + [False]) if units else np.array([False])
+        # v3: marginal-preserving assist weights. Given scorer shares q and the on-ice boost B[scorer, i], solve
+        # pre-weights w (IPF) so E[assists_i] matches each player's assist share; the linemate structure then
+        # only moves correlation, not the A/PTS marginals priced off the market.
+        if P > 0 and units:
+            q = np.concatenate([gs, [other_g]]); q = q / q.sum()
+            B = np.ones((P + 1, P + 1))
+            for j in range(P):
+                if uid[j] >= 0 and is_fwd_unit[uid[j]]:
+                    B[j, :P] = np.where(uid == uid[j], LINEMATE_W, np.where(is_d_player, 1 + (LINEMATE_W - 1) * LINEMATE_D_FRAC, 1.0))
+            np.fill_diagonal(B, 0.0)
+            B[P, P] = 1.0                                   # 'other' scorer -> 'other' assister allowed (many players)
+            t = np.concatenate([ash, [Wa[0, P]]])
+            t = t / t.sum()
+            w = t.copy()
+            for _ in range(60):
+                Kw = B * w[None, :]
+                cur = q @ (Kw / np.maximum(Kw.sum(1, keepdims=True), 1e-12))
+                w = np.where(cur > 1e-12, w * t / np.maximum(cur, 1e-12), w)
+            Wa = np.concatenate([w[None, :P] * Mp, np.full((n, 1), w[P])], axis=1)
         tot_goals = gp + en
         G = np.zeros((n, P + 1), np.int16)
         A = np.zeros((n, P + 1), np.int16)
@@ -176,14 +199,19 @@ def simulate(home, away, n=N_DEFAULT, seed=0, pace_cv=0.03, game_key="g", split_
             if P > 0 and units:
                 sc_unit = np.where(sc < P, uid[np.clip(sc, 0, P - 1)], -1)
                 same = (uid[None, :] == sc_unit[:, None]) & (sc_unit[:, None] >= 0)
-                boost = np.where(same & is_fwd_unit[np.clip(sc_unit, 0, None)][:, None], LINEMATE_W, 1.0)
+                fwd_sc = is_fwd_unit[np.clip(sc_unit, 0, None)][:, None] & (sc_unit[:, None] >= 0)
+                # v3: assists come from on-ice skaters -> scorer's linemates (xW) and D (each pair on ice with a
+                # given line ~1/3 of the time -> x(1 + (W-1) * LINEMATE_D_FRAC)); other forwards x1
+                boost = np.where(same & fwd_sc, LINEMATE_W,
+                                 np.where(is_d_player[None, :] & fwd_sc, 1 + (LINEMATE_W - 1) * LINEMATE_D_FRAC, 1.0))
             else:
                 boost = 1.0
-            for prob in (0.90, 0.65):
+            for prob in A_PROBS:
                 has = rng.random(len(idx)) < prob
                 w = Wa[idx].copy()
                 w[:, :P] *= boost
                 w[np.arange(len(idx)), sc] = 0
+                w[:, P] += 1e-9                                  # never an all-zero row
                 w /= w.sum(1, keepdims=True)
                 pick = (rng.random((len(idx), 1)) < w.cumsum(1)).argmax(1)
                 A[idx[has], pick[has]] += 1
