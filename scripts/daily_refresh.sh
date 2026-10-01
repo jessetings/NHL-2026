@@ -22,5 +22,6 @@ PYTHONPATH=src/ingest python3 src/ingest/curate.py nhl > logs/curate_nhl.log 2>&
 python3 src/features/deployment.py > logs/deployment.log 2>&1 || echo "deployment failed"
 python3 src/features/build.py > logs/features.log 2>&1 || echo "features failed"
 python3 src/features/shotq.py > logs/shotq.log 2>&1 || echo "shotq failed"
+python3 src/features/lines.py > logs/lines.log 2>&1 || echo "lines failed"
 python3 -c "import sys; sys.path.insert(0, 'src'); from models import props_v2 as P; P.predict_all()" > logs/props_v2.log 2>&1 || echo "props_v2 predict failed"
 echo "[$(date -u +%FT%TZ)] daily refresh done"

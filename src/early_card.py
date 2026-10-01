@@ -22,7 +22,7 @@ import slate as SL  # noqa: E402
 from models import props_v2 as V2  # noqa: E402
 
 STAT = {"shots_onGoal": "SOG", "points": "G", "goals+assists": "PTS", "assists": "A"}
-BET_RULE = {("SOG", "under"): 0.04}          # validated (level-corrected edge, open prices): +4.8% ROI, n=941, CLV +0.52
+BET_RULE = {("SOG", "under"): 0.04}          # validated (level-corrected edge, open prices): +4.0% ROI, n=925, CLV +0.51 (reports/open_edge.md §3)
 MAX_PER_GAME = 3
 MIN_GP = 30
 STAKE = 0.0075                               # 0.75% of bankroll per qualifying early bet (provisional signal)
@@ -106,7 +106,7 @@ def main(date):
          f"_Odds snapshot {os.path.basename(snap)}. Prop model v2 (strength-split EV/PP rates, xG/high-danger, opponent "
          "EV/PK allowed, opponent penalties → PP time, opposing goalie GSAx/HD). Bet these EARLY: the market moves toward "
          "v2 by close (t=20–43), so waiting gives the edge away._", "",
-         f"## ✅ Bets — validated rule: SOG unders, level-corrected v2 edge ≥ 4 pts (backtest at open: +4.8% ROI ±6.5%, n=941, CLV +0.52; blanket unders −2.1%) · max {MAX_PER_GAME}/game · stake {STAKE:.2%} each", "", "_⏱️ Timing matters: the validated edge is at OPENING prices. Run this when DK/FD props open (morning ET). "
+         f"## ✅ Bets — validated rule: SOG unders, level-corrected v2 edge ≥ 4 pts (backtest at open: +4.0% ROI ±6.6%, n=925, CLV +0.51; blanket unders −2.1%) · max {MAX_PER_GAME}/game · stake {STAKE:.2%} each", "", "_⏱️ Timing matters: the validated edge is at OPENING prices. Run this when DK/FD props open (morning ET). "
          "Near puck drop the same rule backtested −2.7% at close — late runs are informational/small stakes._", "",
          f"_v2 level vs market tonight: { {k: round(v, 3) for k, v in LVL.items()} } (ratios applied before edges)._", "",
          "| Player | Game | Unit | Bet | Price | v2 mean (lvl-adj) | v2 p | Implied | Edge | EV |", "|---|---|---|---|---|---|---|---|---|---|"]

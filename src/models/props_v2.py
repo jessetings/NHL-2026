@@ -41,13 +41,15 @@ def frame():
                 on=["game_id", "team"], how="left")
     d = d.merge(t[["game_id", "team"] + tc].add_prefix("opp_").rename(columns={"opp_game_id": "game_id", "opp_team": "opp"}),
                 on=["game_id", "opp"], how="left")
+    lmf = pd.read_parquet(f"{CUR}/features/lines_player_game.parquet")[["game_id", "player_id", "lm_ev_xg60", "lm_ev_pts60", "lm_ev_sog60", "pp_rank"]]
+    d = d.merge(lmf, on=["game_id", "player_id"], how="left")
     g = pd.read_parquet(f"{CUR}/features/shotq_goalie.parquet")[["game_id", "goalie_id", "gsax100", "hd_svx", "gp_prior"]]
     d = d.merge(g.rename(columns={"goalie_id": "opp_goalie_id", "gp_prior": "og_gp"}), on=["game_id", "opp_goalie_id"], how="left")
     return d
 
 
 LG_COLS = ["opp_pk_sec_pg", "opp_a_ev_sog60", "opp_a_pp_sog60", "opp_a_ev_xg60", "opp_a_pp_xg60", "opp_a_ev_hd60",
-           "own_f_ev_xg60", "own_f_pp_xg60"]
+           "own_f_ev_xg60", "own_f_pp_xg60", "lm_ev_xg60", "lm_ev_pts60", "lm_ev_sog60"]
 
 
 def league(d):
@@ -67,6 +69,8 @@ def prep(d, lg=None, live=False):
         d[f"R_{col}"] = (d[f"opp_{col}"] / lg[f"opp_{col}"]).clip(0.5, 2)
     d["E_ev"] = (d.own_f_ev_xg60 / lg.own_f_ev_xg60 * d.opp_a_ev_xg60 / lg.opp_a_ev_xg60).clip(0.4, 2.5)
     d["E_pp"] = (d.own_f_pp_xg60 / lg.own_f_pp_xg60 * d.opp_a_pp_xg60 / lg.opp_a_pp_xg60).clip(0.4, 2.5)
+    for c in ("lm_ev_xg60", "lm_ev_pts60", "lm_ev_sog60"):     # linemate quality (EV), 1.0 when unknown
+        d[f"LM_{c}"] = (d[c] / lg[c]).clip(0.4, 2.5).fillna(1.0) if c in d else 1.0
     d["gsax"] = d.gsax100.fillna(0).clip(-3, 3)
     d["hdsv"] = (d.hd_svx.fillna(0) * 10).clip(-2, 2)
     d["home"] = d.is_home.astype(float)
@@ -85,6 +89,7 @@ def prep(d, lg=None, live=False):
     return d.dropna(subset=["EVh", "ev_sog60", "R_a_ev_sog60", "R_a_pp_sog60", "v1_SOG"])
 
 
+LMCOL = {"SOG": "LM_lm_ev_sog60", "G": "LM_lm_ev_pts60", "A": "LM_lm_ev_xg60", "PTS": "LM_lm_ev_xg60"}
 SPEC = {   # market: (EV rate col, PP rate col, EV ratio col, PP ratio col, goalie?, finish?)
     "SOG": ("ev_sog60", "pp_sog60", "R_a_ev_sog60", "R_a_pp_sog60", False, False),
     "G": ("ev_xg60", "pp_xg60", "R_a_ev_xg60", "R_a_pp_xg60", True, True),
@@ -92,13 +97,14 @@ SPEC = {   # market: (EV rate col, PP rate col, EV ratio col, PP ratio col, goal
     "PTS": ("ev_pts60", "pp_pts60", "E_ev", "E_pp", True, False),
 }
 TARGET = {"SOG": "sog", "G": "goals", "A": "assists", "PTS": "points"}
-NAMES = ["log_s", "dD", "a_ev", "a_pp", "k_pk", "w_pp", "h", "b2b", "t_gsax", "t_hd", "f_fin"]
+NAMES = ["log_s", "dD", "a_ev", "a_pp", "k_pk", "w_pp", "h", "b2b", "t_gsax", "t_hd", "f_fin", "l_lm"]
 
 
 def mean(x, d, mk):
     ev, pp, rev, rpp, goalie, fin = SPEC[mk]
     p = dict(zip(NAMES, x))
-    m = d[ev] * d.EVh * d[rev] ** p["a_ev"] + np.exp(p["w_pp"]) * d[pp] * d.PPh * d.PKopp ** p["k_pk"] * d[rpp] ** p["a_pp"]
+    lmq = d[LMCOL[mk]] ** p.get("l_lm", 0.0) if LMCOL[mk] in d else 1.0
+    m = d[ev] * d.EVh * d[rev] ** p["a_ev"] * lmq + np.exp(p["w_pp"]) * d[pp] * d.PPh * d.PKopp ** p["k_pk"] * d[rpp] ** p["a_pp"]
     m = m * np.exp(p["log_s"] + p["dD"] * d.isD + p["h"] * (d.home - 0.5) + p["b2b"] * d.b2b_own)
     if goalie:
         m = m * np.exp(p["t_gsax"] * d.gsax + p["t_hd"] * d.hdsv)
@@ -119,7 +125,7 @@ def fit(d, mk):
     tr = d[d.season.isin(TRAIN)]
     y = tr[TARGET[mk]].values
     alpha = 0.04 if mk == "SOG" else None
-    x0 = np.array([0, 0, 0.5, 0.5, 0.5, 0, 0.05, -0.03, 0, 0, 0.5])
+    x0 = np.array([0, 0, 0.5, 0.5, 0.5, 0, 0.05, -0.03, 0, 0, 0.5, 0.0])
     fixed_off = {"t_gsax", "t_hd"} if not SPEC[mk][4] else set()
     if not SPEC[mk][5]:
         fixed_off |= {"f_fin"}
@@ -205,7 +211,7 @@ def predict_all(d=None):
     for mk, p in P.items():
         if mk.startswith("_"):
             continue
-        out[f"mu_{mk}"] = mean(np.array([p[n] for n in NAMES]), d, mk).values
+        out[f"mu_{mk}"] = mean(np.array([p.get(n, 0.0) for n in NAMES]), d, mk).values
     out["alpha_SOG"] = P["SOG"]["alpha"]
     out.to_parquet(f"{CUR}/models/props_v2_pred.parquet", index=False)
     return out
@@ -293,11 +299,16 @@ def live(date, goalies=None):
                               goals60_ewm15=np.nan, goals60_ewm40=np.nan, assists60_ewm15=np.nan,
                               assists60_ewm40=np.nan, points60_ewm15=np.nan, points60_ewm40=np.nan))
                 rows.append(r)
-    d = prep(pd.DataFrame(rows), lg, live=True)
+    R = pd.DataFrame(rows)
+    # linemates from tonight's DailyFaceoff units (same team + same f#/d# group), their next-game EV rates
+    R["ev_pts60_"] = R.ev_pg60 + R.ev_pa60
+    for c, src in (("lm_ev_xg60", "ev_xg60"), ("lm_ev_pts60", "ev_pts60_"), ("lm_ev_sog60", "ev_sog60")):
+        R[c] = [R[(R.team == t) & (R.unit == u) & (R.player_id != p)][src].mean() for t, u, p in zip(R.team, R.unit, R.player_id)]
+    d = prep(R, lg, live=True)
     out = d[["player_id", "name", "key", "team", "opp", "is_home", "unit", "gp_prior"]].copy()
     for mk, p in P.items():
         if not mk.startswith("_"):
-            out[f"mu_{mk}"] = mean(np.array([p[n] for n in NAMES]), d, mk).values
+            out[f"mu_{mk}"] = mean(np.array([p.get(n, 0.0) for n in NAMES]), d, mk).values
     out["alpha_SOG"] = P["SOG"]["alpha"]
     return out
 

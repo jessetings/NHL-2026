@@ -108,6 +108,29 @@ def main():
                                      roi=pnl.mean(), se=2 * pnl.std() / np.sqrt(sel.sum()), clv=clv.mean()))
                     L.append(f"| {mdl[2:]} | {st} | {side} | {thr:.0%} | {sel.sum()} | {win[sel].mean():.3f} | {pnl.mean():+.1%} | "
                              f"{2 * pnl.std() / np.sqrt(sel.sum()):.1%} | {100 * clv.mean():+.2f} |")
+    # 3. the live rule: SOG unders, v2 level-corrected per date (relative signal), DK/FD open prices
+    from scipy import optimize
+    sg = w[(w.stat == "shots_onGoal") & w.p_v2.notna() & w.book.isin(["draftkings", "fanduel"])].copy()
+    n = 1 / sg.alpha_SOG.iloc[0]
+
+    def inv(p, line):
+        try:
+            return optimize.brentq(lambda m: stats.nbinom.sf(np.floor(line), n, n / (n + m)) - p, 0.05, 12)
+        except Exception:  # noqa: BLE001
+            return np.nan
+    sg["mu_mkt"] = [inv(p, l) for p, l in zip(sg.p_open, sg.line)]
+    lvl = (sg.mu_SOG / sg.mu_mkt).groupby(sg.date).transform("median")
+    sg["p_rel"] = stats.nbinom.sf(np.floor(sg.line), n, n / (n + sg.mu_SOG / lvl))
+    imp_u = prob(sg.oo_under)
+    dec_u = np.where(sg.oo_under > 0, 1 + sg.oo_under / 100, 1 + 100 / -sg.oo_under)
+    L += ["", "## 3. Live rule: SOG unders, level-corrected v2 edge (DK/FD open prices)", "",
+          "| Edge ≥ | n | ROI | ±2se | CLV (pts) |", "|---|---|---|---|---|"]
+    for thr in (-1, 0.0, 0.02, 0.04, 0.06):
+        sel = ((1 - sg.p_rel) - imp_u) >= thr
+        pnl = np.where(sg.over_hit[sel] == 0, dec_u[sel] - 1, -1)
+        clv = ((1 - sg.p_close) - (1 - sg.p_open))[sel]
+        L.append(f"| {'all (blanket)' if thr < 0 else f'{thr:.0%}'} | {sel.sum()} | {pnl.mean():+.1%} | "
+                 f"{2 * pnl.std() / np.sqrt(sel.sum()):.1%} | {100 * clv.mean():+.2f} |")
     out = "\n".join(L)
     print(out)
     open("reports/open_edge.md", "w").write(out)
