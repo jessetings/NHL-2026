@@ -41,6 +41,190 @@
  "first_goal": {},
  "picks": [
   {
+   "source": "pyramid",
+   "tier": "CAPSTONE",
+   "game": "STL@DAL",
+   "player": "Wyatt Johnston",
+   "team": "DAL",
+   "role": "f1",
+   "market": "PTS",
+   "side": "over",
+   "line": 1.5,
+   "book": "fanduel",
+   "odds": 285,
+   "p": 0.285515,
+   "p_model": 0.312617,
+   "p_market": 0.267448,
+   "stake": 0.015,
+   "actual": null,
+   "result": "open",
+   "pnl": 0.0,
+   "close_odds": 285.0,
+   "clv": 0.0,
+   "implied": 0.25974
+  },
+  {
+   "source": "pyramid",
+   "tier": "FOUNDATION",
+   "game": "BOS@WPG",
+   "player": "David Pastrnak",
+   "team": "BOS",
+   "role": "f1",
+   "market": "SOG",
+   "side": "under",
+   "line": 3.5,
+   "book": "draftkings",
+   "odds": -125,
+   "p": 0.596383,
+   "p_model": 0.633673,
+   "p_market": 0.571522,
+   "stake": 0.015,
+   "actual": null,
+   "result": "open",
+   "pnl": 0.0,
+   "close_odds": -125.0,
+   "clv": 0.0,
+   "implied": 0.555556
+  },
+  {
+   "source": "pyramid",
+   "tier": "FOUNDATION",
+   "game": "NYR@DET",
+   "player": "Alex DeBrincat",
+   "team": "DET",
+   "role": "f1",
+   "market": "SOG",
+   "side": "under",
+   "line": 3.5,
+   "book": "fanduel",
+   "odds": -125,
+   "p": 0.572855,
+   "p_model": 0.574345,
+   "p_market": 0.571863,
+   "stake": 0.008929,
+   "actual": null,
+   "result": "open",
+   "pnl": 0.0,
+   "close_odds": -125.0,
+   "clv": 0.0,
+   "implied": 0.555556
+  },
+  {
+   "source": "pyramid",
+   "tier": "UPPER COURSE",
+   "game": "STL@DAL",
+   "player": "Robert Thomas",
+   "team": "STL",
+   "role": "f1",
+   "market": "SOG",
+   "side": "over",
+   "line": 2.5,
+   "book": "fanduel",
+   "odds": 300,
+   "p": 0.273048,
+   "p_model": 0.293012,
+   "p_market": 0.259738,
+   "stake": 0.015,
+   "actual": null,
+   "result": "open",
+   "pnl": 0.0,
+   "close_odds": 300.0,
+   "clv": 0.0,
+   "implied": 0.25
+  },
+  {
+   "source": "pyramid",
+   "tier": "MIDDLE COURSE",
+   "game": "BOS@WPG",
+   "player": "Mark Scheifele",
+   "team": "WPG",
+   "role": "f1",
+   "market": "G",
+   "side": "over",
+   "line": 1.5,
+   "book": "draftkings",
+   "odds": 1900,
+   "p": 0.062549,
+   "p_model": 0.074771,
+   "p_market": 0.054401,
+   "stake": 0.001935,
+   "actual": null,
+   "result": "open",
+   "pnl": 0.0,
+   "close_odds": 1900.0,
+   "clv": 0.0,
+   "implied": 0.05
+  },
+  {
+   "source": "pyramid",
+   "tier": "MIDDLE COURSE",
+   "game": "WSH@CAR",
+   "player": "Jordan Kyrou",
+   "team": "WSH",
+   "role": "f3",
+   "market": "A",
+   "side": "over",
+   "line": 0.5,
+   "book": "draftkings",
+   "odds": 270,
+   "p": 0.300208,
+   "p_model": 0.312592,
+   "p_market": 0.291951,
+   "stake": 0.00601,
+   "actual": null,
+   "result": "open",
+   "pnl": 0.0,
+   "close_odds": 270.0,
+   "clv": 0.0,
+   "implied": 0.27027
+  },
+  {
+   "source": "pyramid",
+   "tier": "MIDDLE COURSE",
+   "game": "BOS@WPG",
+   "player": "Kyle Connor",
+   "team": "WPG",
+   "role": "f1",
+   "market": "G",
+   "side": "over",
+   "line": 1.5,
+   "book": "draftkings",
+   "odds": 1300,
+   "p": 0.08221,
+   "p_model": 0.095415,
+   "p_market": 0.073406,
+   "stake": 0.001701,
+   "actual": null,
+   "result": "open",
+   "pnl": 0.0,
+   "close_odds": 1300.0,
+   "clv": 0.0,
+   "implied": 0.071429
+  },
+  {
+   "source": "pyramid",
+   "tier": "MIDDLE COURSE",
+   "game": "WSH@CAR",
+   "player": "Alex Tuch",
+   "team": "WSH",
+   "role": "f1",
+   "market": "A",
+   "side": "over",
+   "line": 0.5,
+   "book": "draftkings",
+   "odds": 270,
+   "p": 0.296941,
+   "p_model": 0.285669,
+   "p_market": 0.304456,
+   "stake": 0.005354,
+   "actual": null,
+   "result": "open",
+   "pnl": 0.0,
+   "close_odds": 270.0,
+   "clv": 0.0,
+   "implied": 0.27027
+  },
+  {
    "source": "early",
    "tier": "SOG-under rule",
    "game": "STL@DAL",
@@ -59,8 +243,8 @@
    "actual": null,
    "result": "open",
    "pnl": 0.0,
-   "close_odds": -150.0,
-   "clv": 0.0,
+   "close_odds": -160.0,
+   "clv": 0.015385,
    "implied": 0.6
   },
   {
@@ -82,8 +266,8 @@
    "actual": null,
    "result": "open",
    "pnl": 0.0,
-   "close_odds": -148.0,
-   "clv": 0.0,
+   "close_odds": -146.0,
+   "clv": -0.003278,
    "implied": 0.596774
   },
   {
@@ -105,12 +289,232 @@
    "actual": null,
    "result": "open",
    "pnl": 0.0,
-   "close_odds": -132.0,
-   "clv": 0.0,
+   "close_odds": -135.0,
+   "clv": 0.005503,
    "implied": 0.568966
   }
  ],
- "tickets": [],
+ "tickets": [
+  {
+   "source": "ticket",
+   "tier": "small",
+   "legs": [
+    {
+     "text": "David Pastrnak U3.5 SOG",
+     "book": "draftkings",
+     "odds": -125,
+     "player": "David Pastrnak",
+     "market": "SOG",
+     "side": "under",
+     "line": 3.5
+    },
+    {
+     "text": "Alex DeBrincat U3.5 SOG",
+     "book": "fanduel",
+     "odds": -125,
+     "player": "Alex DeBrincat",
+     "market": "SOG",
+     "side": "under",
+     "line": 3.5
+    }
+   ],
+   "payout_x": 3.24,
+   "p": 0.341641,
+   "ev": 0.106917,
+   "stake": 0.002,
+   "result": "open",
+   "pnl": 0.0
+  },
+  {
+   "source": "ticket",
+   "tier": "medium",
+   "legs": [
+    {
+     "text": "Wyatt Johnston 2+ pts",
+     "book": "fanduel",
+     "odds": 285,
+     "player": "Wyatt Johnston",
+     "market": "PTS",
+     "side": "over",
+     "line": 1.5
+    },
+    {
+     "text": "David Pastrnak U3.5 SOG",
+     "book": "draftkings",
+     "odds": -125,
+     "player": "David Pastrnak",
+     "market": "SOG",
+     "side": "under",
+     "line": 3.5
+    }
+   ],
+   "payout_x": 6.93,
+   "p": 0.170277,
+   "ev": 0.180016,
+   "stake": 0.001,
+   "result": "open",
+   "pnl": 0.0
+  },
+  {
+   "source": "ticket",
+   "tier": "medium",
+   "legs": [
+    {
+     "text": "Wyatt Johnston 2+ pts",
+     "book": "fanduel",
+     "odds": 285,
+     "player": "Wyatt Johnston",
+     "market": "PTS",
+     "side": "over",
+     "line": 1.5
+    },
+    {
+     "text": "Alex DeBrincat U3.5 SOG",
+     "book": "fanduel",
+     "odds": -125,
+     "player": "Alex DeBrincat",
+     "market": "SOG",
+     "side": "under",
+     "line": 3.5
+    }
+   ],
+   "payout_x": 6.93,
+   "p": 0.163559,
+   "ev": 0.133464,
+   "stake": 0.001,
+   "result": "open",
+   "pnl": 0.0
+  },
+  {
+   "source": "ticket",
+   "tier": "medium",
+   "legs": [
+    {
+     "text": "Wyatt Johnston 2+ pts",
+     "book": "fanduel",
+     "odds": 285,
+     "player": "Wyatt Johnston",
+     "market": "PTS",
+     "side": "over",
+     "line": 1.5
+    },
+    {
+     "text": "Jordan Kyrou 1+ ast",
+     "book": "draftkings",
+     "odds": 270,
+     "player": "Jordan Kyrou",
+     "market": "A",
+     "side": "over",
+     "line": 0.5
+    }
+   ],
+   "payout_x": 14.245,
+   "p": 0.085714,
+   "ev": 0.220995,
+   "stake": 0.001,
+   "result": "open",
+   "pnl": 0.0
+  },
+  {
+   "source": "ticket",
+   "tier": "moonshot",
+   "legs": [
+    {
+     "text": "Wyatt Johnston 2+ pts",
+     "book": "fanduel",
+     "odds": 285,
+     "player": "Wyatt Johnston",
+     "market": "PTS",
+     "side": "over",
+     "line": 1.5
+    },
+    {
+     "text": "Mark Scheifele 2+ goals",
+     "book": "draftkings",
+     "odds": 1900,
+     "player": "Mark Scheifele",
+     "market": "G",
+     "side": "over",
+     "line": 1.5
+    }
+   ],
+   "payout_x": 77.0,
+   "p": 0.017859,
+   "ev": 0.375122,
+   "stake": 0.0005,
+   "result": "open",
+   "pnl": 0.0
+  },
+  {
+   "source": "ticket",
+   "tier": "moonshot",
+   "legs": [
+    {
+     "text": "Wyatt Johnston 2+ pts",
+     "book": "fanduel",
+     "odds": 285,
+     "player": "Wyatt Johnston",
+     "market": "PTS",
+     "side": "over",
+     "line": 1.5
+    },
+    {
+     "text": "Kyle Connor 2+ goals",
+     "book": "draftkings",
+     "odds": 1300,
+     "player": "Kyle Connor",
+     "market": "G",
+     "side": "over",
+     "line": 1.5
+    }
+   ],
+   "payout_x": 53.9,
+   "p": 0.023472,
+   "ev": 0.265149,
+   "stake": 0.0005,
+   "result": "open",
+   "pnl": 0.0
+  },
+  {
+   "source": "ticket",
+   "tier": "moonshot",
+   "legs": [
+    {
+     "text": "Wyatt Johnston 2+ pts",
+     "book": "fanduel",
+     "odds": 285,
+     "player": "Wyatt Johnston",
+     "market": "PTS",
+     "side": "over",
+     "line": 1.5
+    },
+    {
+     "text": "Alex DeBrincat U3.5 SOG",
+     "book": "fanduel",
+     "odds": -125,
+     "player": "Alex DeBrincat",
+     "market": "SOG",
+     "side": "under",
+     "line": 3.5
+    },
+    {
+     "text": "Mark Scheifele 2+ goals",
+     "book": "draftkings",
+     "odds": 1900,
+     "player": "Mark Scheifele",
+     "market": "G",
+     "side": "over",
+     "line": 1.5
+    }
+   ],
+   "payout_x": 138.6,
+   "p": 0.01023,
+   "ev": 0.417943,
+   "stake": 0.0005,
+   "result": "open",
+   "pnl": 0.0
+  }
+ ],
  "summary": {
   "early": {
    "n": 3,
@@ -119,8 +523,28 @@
    "staked": 0,
    "pnl": 0.0,
    "roi": null,
-   "avg_clv": 0.0,
+   "avg_clv": 0.00587,
    "n_clv": 3
+  },
+  "pyramid": {
+   "n": 8,
+   "settled": 0,
+   "won": 0,
+   "staked": 0,
+   "pnl": 0.0,
+   "roi": null,
+   "avg_clv": 0.0,
+   "n_clv": 8
+  },
+  "ticket": {
+   "n": 7,
+   "settled": 0,
+   "won": 0,
+   "staked": 0,
+   "pnl": 0.0,
+   "roi": null,
+   "avg_clv": null,
+   "n_clv": 0
   }
  }
 }

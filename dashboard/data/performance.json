@@ -79,10 +79,38 @@
    "staked": 0.0,
    "pnl": 0.0,
    "roi": null,
-   "avg_clv": 0.0,
+   "avg_clv": 0.00587,
    "n_clv": 3,
    "cum_pnl": -0.034507,
    "cum_staked": 0.09
+  },
+  {
+   "date": "2026-10-02",
+   "source": "pyramid",
+   "n": 8,
+   "settled": 0,
+   "won": 0,
+   "staked": 0.0,
+   "pnl": 0.0,
+   "roi": null,
+   "avg_clv": 0.0,
+   "n_clv": 8,
+   "cum_pnl": 0.007239,
+   "cum_staked": 0.13
+  },
+  {
+   "date": "2026-10-02",
+   "source": "ticket",
+   "n": 7,
+   "settled": 0,
+   "won": 0,
+   "staked": 0.0,
+   "pnl": 0.0,
+   "roi": null,
+   "avg_clv": null,
+   "n_clv": 0,
+   "cum_pnl": -0.0115,
+   "cum_staked": 0.0115
   }
  ],
  "ledger": [

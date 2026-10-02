@@ -105,7 +105,8 @@ def main(date):
     best = t.drop_duplicates(["player", "market", "side", "line"])
     out = f"cards/{date}"
     os.makedirs(out, exist_ok=True)
-    t.to_csv(f"{out}/early_all.csv", index=False)
+    tag = os.environ.get("EARLY_TAG", "")          # "_late" when a morning card already exists (keep the record)
+    t.to_csv(f"{out}/early_all{tag}.csv", index=False)
     moved = best[best.new_team & (best.edge >= 0.04)]
     best = best[(best.gp >= MIN_GP) & ~best.new_team]   # backtest population: real history, settled role on this team
     bets = best[[BET_RULE.get((mk, sd), 9) <= e for mk, sd, e in zip(best.market, best.side, best.edge)]]
@@ -132,8 +133,8 @@ def main(date):
     for r in w.itertuples():
         L.append(f"| {r.player} | {r.game} | {r.market} | {r.side.title()} {r.line:g} | {r.book[:2].upper()} {r.odds:+d} | "
                  f"{r.p_rel:.1%} | {r.implied:.1%} | {r.edge:+.1%} |")
-    open(f"{out}/EARLY.md", "w").write("\n".join(L))
-    bets.assign(stake=STAKE, rule="SOG under, level-corrected v2 edge >= 4").to_csv(f"{out}/early_bets.csv", index=False)
+    open(f"{out}/EARLY{tag}.md", "w").write("\n".join(L))
+    bets.assign(stake=STAKE, rule="SOG under, level-corrected v2 edge >= 4").to_csv(f"{out}/early_bets{tag}.csv", index=False)
     print("\n".join(L))
 
 
