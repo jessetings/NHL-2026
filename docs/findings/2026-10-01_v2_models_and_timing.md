@@ -69,3 +69,16 @@ Fitted structure:
 
 - **Player vs a specific opponent** ("he always scores against them"): the correlation between past residuals vs this opponent (n ≥ 3 games) and today's residual is +0.008 for SOG, +0.005 for goals and +0.011 for points (n = 57k; 2se = 0.008). The slope is 0.02, so +1 SOG/game of past over-performance becomes +0.016 SOG. **Treat it as noise and never use it as a reason.**
 - Linemate quality (§2) is the deployment context that does carry signal (goals elasticity 0.41).
+
+## 7. Extra prop markets: power-play points, blocks, goalie saves (`src/models/props_extra.py`, `goalie_saves.py`)
+Report: `reports/open_edge_extra.md` (DK/FD opening prices, 2026-01-17+).
+
+| Market | Model vs naive (OOS 2025-26, Δ×1000) | Line moves toward model | Blanket overs at open | Best model slice |
+|---|---|---|---|---|
+| **PP points** | −0.25 ± 0.32 | t +12.4 | **−21.1%** (n = 7,086) | unders, raw edge ≥ 6: +4.8% ± 6.6 (n = 370) |
+| **Blocks** | −3.01 ± 0.59 (opponent shot volume elasticity 0.79) | t +7.7 | −11.2% | unders, raw edge ≥ 3: **+18.2% ± 15.3** (n = 162, CLV +0.55) |
+| **Goalie saves** | −35.3 ± 11.2 | t +11.8 | −9.8% | none significant (unders, raw edge ≥ 6: +2.6% ± 7.9) |
+
+- **PP point overs are the most over-priced market we have measured.** The opening market implies a 22.0% hit rate; the actual rate is 19.1%. Never bet them, boosted or not, unless the boost is huge.
+- **Blocks unders with a model edge are promising** (CLV +0.55) but the sample is small. The card shows them as a watchlist, not as bets.
+- **Goalie saves:** the model runs low in 2026 (p 0.43 vs 0.485 actual), so it needs a level correction before live use. No edge yet.

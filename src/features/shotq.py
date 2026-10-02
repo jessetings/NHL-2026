@@ -221,6 +221,7 @@ def main():
 
     dep = con.execute(f"select * from '{CUR}/features/deployment.parquet'").df()
     pts = points_by_strength(con)
+    pts.to_parquet(f"{OUT}/pts_strength_game.parquet", index=False)
     pf = player_features(psg, dep, pts, games)
     pf.to_parquet(f"{OUT}/shotq_player.parquet", index=False)
     tsec = team_seconds(con)
