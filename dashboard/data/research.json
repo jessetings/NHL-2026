@@ -1,0 +1,486 @@
+{
+ "open_edge": [
+  {
+   "model": "p_v1",
+   "stat": "assists",
+   "side": "over",
+   "thr": 0.03,
+   "n": 787,
+   "hit": 0.31385,
+   "roi": -0.010245,
+   "se": 0.10929,
+   "clv": 0.007485
+  },
+  {
+   "model": "p_v1",
+   "stat": "assists",
+   "side": "over",
+   "thr": 0.06,
+   "n": 183,
+   "hit": 0.333333,
+   "roi": 0.077754,
+   "se": 0.235846,
+   "clv": 0.010796
+  },
+  {
+   "model": "p_v1",
+   "stat": "assists",
+   "side": "under",
+   "thr": 0.03,
+   "n": 1049,
+   "hit": 0.63775,
+   "roi": -0.030368,
+   "se": 0.047187,
+   "clv": 0.000478
+  },
+  {
+   "model": "p_v1",
+   "stat": "assists",
+   "side": "under",
+   "thr": 0.06,
+   "n": 302,
+   "hit": 0.675497,
+   "roi": 0.041279,
+   "se": 0.0884,
+   "clv": 0.00086
+  },
+  {
+   "model": "p_v1",
+   "stat": "goals+assists",
+   "side": "over",
+   "thr": 0.03,
+   "n": 1073,
+   "hit": 0.416589,
+   "roi": -0.005762,
+   "se": 0.07468,
+   "clv": 0.006396
+  },
+  {
+   "model": "p_v1",
+   "stat": "goals+assists",
+   "side": "over",
+   "thr": 0.06,
+   "n": 287,
+   "hit": 0.407666,
+   "roi": 0.02181,
+   "se": 0.151606,
+   "clv": 0.010959
+  },
+  {
+   "model": "p_v1",
+   "stat": "goals+assists",
+   "side": "under",
+   "thr": 0.03,
+   "n": 888,
+   "hit": 0.521396,
+   "roi": -0.065711,
+   "se": 0.062285,
+   "clv": 0.000477
+  },
+  {
+   "model": "p_v1",
+   "stat": "goals+assists",
+   "side": "under",
+   "thr": 0.06,
+   "n": 258,
+   "hit": 0.531008,
+   "roi": -0.046865,
+   "se": 0.115194,
+   "clv": 0.001494
+  },
+  {
+   "model": "p_v1",
+   "stat": "points",
+   "side": "over",
+   "thr": 0.03,
+   "n": 224,
+   "hit": 0.285714,
+   "roi": -0.110714,
+   "se": 0.19111,
+   "clv": 0.007192
+  },
+  {
+   "model": "p_v1",
+   "stat": "points",
+   "side": "over",
+   "thr": 0.06,
+   "n": 56,
+   "hit": 0.267857,
+   "roi": -0.161607,
+   "se": 0.376138,
+   "clv": 0.013773
+  },
+  {
+   "model": "p_v1",
+   "stat": "points",
+   "side": "under",
+   "thr": 0.03,
+   "n": 64,
+   "hit": 0.703125,
+   "roi": 0.020298,
+   "se": 0.170497,
+   "clv": 0.011494
+  },
+  {
+   "model": "p_v1",
+   "stat": "shots_onGoal",
+   "side": "over",
+   "thr": 0.03,
+   "n": 1182,
+   "hit": 0.469543,
+   "roi": -0.059752,
+   "se": 0.059181,
+   "clv": 0.011622
+  },
+  {
+   "model": "p_v1",
+   "stat": "shots_onGoal",
+   "side": "over",
+   "thr": 0.06,
+   "n": 360,
+   "hit": 0.469444,
+   "roi": -0.037947,
+   "se": 0.109536,
+   "clv": 0.016899
+  },
+  {
+   "model": "p_v1",
+   "stat": "shots_onGoal",
+   "side": "under",
+   "thr": 0.03,
+   "n": 2088,
+   "hit": 0.53113,
+   "roi": 0.033718,
+   "se": 0.043337,
+   "clv": 0.00792
+  },
+  {
+   "model": "p_v1",
+   "stat": "shots_onGoal",
+   "side": "under",
+   "thr": 0.06,
+   "n": 799,
+   "hit": 0.530663,
+   "roi": 0.060886,
+   "se": 0.071855,
+   "clv": 0.011138
+  },
+  {
+   "model": "p_v2",
+   "stat": "assists",
+   "side": "over",
+   "thr": 0.03,
+   "n": 211,
+   "hit": 0.236967,
+   "roi": -0.220284,
+   "se": 0.199492,
+   "clv": 0.009172
+  },
+  {
+   "model": "p_v2",
+   "stat": "assists",
+   "side": "over",
+   "thr": 0.06,
+   "n": 31,
+   "hit": 0.225806,
+   "roi": -0.3,
+   "se": 0.491785,
+   "clv": 0.017392
+  },
+  {
+   "model": "p_v2",
+   "stat": "assists",
+   "side": "under",
+   "thr": 0.03,
+   "n": 817,
+   "hit": 0.569155,
+   "roi": -0.039293,
+   "se": 0.0607,
+   "clv": 0.001216
+  },
+  {
+   "model": "p_v2",
+   "stat": "assists",
+   "side": "under",
+   "thr": 0.06,
+   "n": 181,
+   "hit": 0.596685,
+   "roi": 0.058457,
+   "se": 0.135276,
+   "clv": 0.001927
+  },
+  {
+   "model": "p_v2",
+   "stat": "goals+assists",
+   "side": "over",
+   "thr": 0.03,
+   "n": 427,
+   "hit": 0.409836,
+   "roi": -0.059529,
+   "se": 0.112011,
+   "clv": 0.008692
+  },
+  {
+   "model": "p_v2",
+   "stat": "goals+assists",
+   "side": "over",
+   "thr": 0.06,
+   "n": 84,
+   "hit": 0.369048,
+   "roi": -0.099709,
+   "se": 0.264595,
+   "clv": 0.013988
+  },
+  {
+   "model": "p_v2",
+   "stat": "goals+assists",
+   "side": "under",
+   "thr": 0.03,
+   "n": 890,
+   "hit": 0.520225,
+   "roi": -0.029947,
+   "se": 0.065181,
+   "clv": 0.001114
+  },
+  {
+   "model": "p_v2",
+   "stat": "goals+assists",
+   "side": "under",
+   "thr": 0.06,
+   "n": 213,
+   "hit": 0.497653,
+   "roi": -0.09907,
+   "se": 0.128549,
+   "clv": 0.002617
+  },
+  {
+   "model": "p_v2",
+   "stat": "points",
+   "side": "over",
+   "thr": 0.03,
+   "n": 82,
+   "hit": 0.268293,
+   "roi": -0.089024,
+   "se": 0.339292,
+   "clv": 0.009932
+  },
+  {
+   "model": "p_v2",
+   "stat": "points",
+   "side": "under",
+   "thr": 0.03,
+   "n": 48,
+   "hit": 0.604167,
+   "roi": -0.029279,
+   "se": 0.231806,
+   "clv": 0.013319
+  },
+  {
+   "model": "p_v2",
+   "stat": "shots_onGoal",
+   "side": "over",
+   "thr": 0.03,
+   "n": 218,
+   "hit": 0.495413,
+   "roi": -0.014524,
+   "se": 0.137048,
+   "clv": 0.020932
+  },
+  {
+   "model": "p_v2",
+   "stat": "shots_onGoal",
+   "side": "over",
+   "thr": 0.06,
+   "n": 39,
+   "hit": 0.384615,
+   "roi": -0.228511,
+   "se": 0.317643,
+   "clv": 0.039198
+  },
+  {
+   "model": "p_v2",
+   "stat": "shots_onGoal",
+   "side": "under",
+   "thr": 0.03,
+   "n": 3958,
+   "hit": 0.530824,
+   "roi": 0.022123,
+   "se": 0.031156,
+   "clv": 0.00368
+  },
+  {
+   "model": "p_v2",
+   "stat": "shots_onGoal",
+   "side": "under",
+   "thr": 0.06,
+   "n": 1946,
+   "hit": 0.535971,
+   "roi": 0.044634,
+   "se": 0.044881,
+   "clv": 0.00516
+  }
+ ],
+ "props_v2_eval": [
+  {
+   "market": "SOG",
+   "n": 46084,
+   "ll_v1": 1.54302,
+   "ll_v2": 1.53891,
+   "delta_x1000": -4.10238,
+   "se_x1000": 1.38177,
+   "brier_v1@1.5": 0.21097,
+   "brier_v2@1.5": 0.2101,
+   "brier_v1@2.5": 0.1476,
+   "brier_v2@2.5": 0.14725,
+   "brier_v1@3.5": 0.08167,
+   "brier_v2@3.5": 0.08157,
+   "brier_v1@0.5": null,
+   "brier_v2@0.5": null
+  },
+  {
+   "market": "G",
+   "n": 46084,
+   "ll_v1": 0.4642,
+   "ll_v2": 0.4531,
+   "delta_x1000": -11.09626,
+   "se_x1000": 2.39154,
+   "brier_v1@1.5": null,
+   "brier_v2@1.5": null,
+   "brier_v1@2.5": null,
+   "brier_v2@2.5": null,
+   "brier_v1@3.5": null,
+   "brier_v2@3.5": null,
+   "brier_v1@0.5": 0.12173,
+   "brier_v2@0.5": 0.12073
+  },
+  {
+   "market": "A",
+   "n": 46084,
+   "ll_v1": 0.65681,
+   "ll_v2": 0.64615,
+   "delta_x1000": -10.65557,
+   "se_x1000": 2.29662,
+   "brier_v1@1.5": null,
+   "brier_v2@1.5": null,
+   "brier_v1@2.5": null,
+   "brier_v2@2.5": null,
+   "brier_v1@3.5": null,
+   "brier_v2@3.5": null,
+   "brier_v1@0.5": 0.17235,
+   "brier_v2@0.5": 0.1711
+  },
+  {
+   "market": "PTS",
+   "n": 46084,
+   "ll_v1": 0.84772,
+   "ll_v2": 0.84006,
+   "delta_x1000": -7.66011,
+   "se_x1000": 1.79344,
+   "brier_v1@1.5": 0.07588,
+   "brier_v2@1.5": 0.07571,
+   "brier_v1@2.5": null,
+   "brier_v2@2.5": null,
+   "brier_v1@3.5": null,
+   "brier_v2@3.5": null,
+   "brier_v1@0.5": 0.20499,
+   "brier_v2@0.5": 0.20358
+  }
+ ],
+ "sim_tails": [
+  {
+   "tail": "1P 0-0",
+   "n": 616,
+   "actual": 0.186688,
+   "sim": 0.159906,
+   "poisson": null
+  },
+  {
+   "tail": "away 5+",
+   "n": 616,
+   "actual": 0.198052,
+   "sim": 0.195648,
+   "poisson": 0.194408
+  },
+  {
+   "tail": "away shutout",
+   "n": 616,
+   "actual": 0.043831,
+   "sim": 0.041594,
+   "poisson": 0.043073
+  },
+  {
+   "tail": "home 5+",
+   "n": 616,
+   "actual": 0.224026,
+   "sim": 0.230464,
+   "poisson": 0.232705
+  },
+  {
+   "tail": "home shutout",
+   "n": 616,
+   "actual": 0.037338,
+   "sim": 0.052352,
+   "poisson": 0.053472
+  },
+  {
+   "tail": "reg tie",
+   "n": 616,
+   "actual": 0.238636,
+   "sim": 0.223371,
+   "poisson": null
+  },
+  {
+   "tail": "total<=3",
+   "n": 616,
+   "actual": 0.128247,
+   "sim": 0.123769,
+   "poisson": 0.141134
+  },
+  {
+   "tail": "total=even",
+   "n": 616,
+   "actual": 0.316558,
+   "sim": 0.318115,
+   "poisson": 0.340033
+  },
+  {
+   "tail": "total>=9",
+   "n": 616,
+   "actual": 0.186688,
+   "sim": 0.177864,
+   "poisson": 0.196668
+  },
+  {
+   "tail": "|margin|=1",
+   "n": 616,
+   "actual": 0.418831,
+   "sim": 0.415043,
+   "poisson": 0.453802
+  },
+  {
+   "tail": "|margin|=3",
+   "n": 616,
+   "actual": 0.217532,
+   "sim": 0.222973,
+   "poisson": 0.152204
+  },
+  {
+   "tail": "|margin|>=4",
+   "n": 616,
+   "actual": 0.165584,
+   "sim": 0.150733,
+   "poisson": 0.165409
+  }
+ ],
+ "headline": {
+  "live_rule": "SOG unders, level-corrected v2 edge >= 4 pts, at OPENING DK/FD prices",
+  "live_rule_backtest": {
+   "n": 925,
+   "roi": 0.04,
+   "roi_2se": 0.066,
+   "clv_pts": 0.51,
+   "blanket_unders_roi": -0.021
+  },
+  "close_efficiency": "props and game lines at close: no model edge (H3 / team model)"
+ }
+}

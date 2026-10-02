@@ -45,6 +45,13 @@ def main(date):
     snap = sorted(glob.glob("data/raw/odds/sgo_slate_alt_*.json") + glob.glob("data/raw/snapshots/*/*.json"))[-1]
     df = O.flatten(snap)
     pl = df[df.player.notna() & df.stat.isin(STAT) & (df.bt == "ou") & df.book.isin(["draftkings", "fanduel"]) & ~df.alt]
+    # never price games that have already started (snapshot prices would be in-game)
+    m_ts = re.search(r"(\d{8}T\d{6}Z)", os.path.basename(snap))
+    snap_ts = pd.Timestamp(m_ts.group(1)).tz_localize("UTC") if m_ts else pd.Timestamp.now(tz="UTC")
+    started = pd.to_datetime(pl.startsAt, utc=True) <= snap_ts
+    if started.any():
+        print(f"skipping {pl[started].eventID.nunique()} game(s) already started at snapshot time")
+    pl = pl[~started]
     goalies = {}
     try:                                   # DailyFaceoff expected starters (latest snapshot)
         import gzip
@@ -122,6 +129,7 @@ def main(date):
         L.append(f"| {r.player} | {r.game} | {r.market} | {r.side.title()} {r.line:g} | {r.book[:2].upper()} {r.odds:+d} | "
                  f"{r.p_rel:.1%} | {r.implied:.1%} | {r.edge:+.1%} |")
     open(f"{out}/EARLY.md", "w").write("\n".join(L))
+    bets.assign(stake=STAKE, rule="SOG under, level-corrected v2 edge >= 4").to_csv(f"{out}/early_bets.csv", index=False)
     print("\n".join(L))
 
 

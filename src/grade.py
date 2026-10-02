@@ -41,6 +41,7 @@ def results(date):
             for grp in ("forwards", "defense"):
                 for p in box.get("playerByGameStats", {}).get(side, {}).get(grp, []):
                     rows.append(dict(game=game, team=team, pid=p["playerId"], short=p["name"]["default"],
+                                     pos="D" if grp == "defense" else "F",
                                      sog=p.get("sog", 0), goals=p.get("goals", 0), assists=p.get("assists", 0),
                                      points=p.get("points", 0), toi=p.get("toi")))
                     roster[p["playerId"]] = p["name"]["default"]

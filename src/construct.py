@@ -277,6 +277,7 @@ def main():
             rows.append(dict(legs=" + ".join(f"{c['pick']} ({c['book'][:2].upper()} {c['odds']:+d})" for c in combo),
                              x=d, p=p, ev=p * d - 1, cracks=sum(c["n_hair"] for c in combo)))
     tk = pd.DataFrame(rows)
+    placed_tk = []
     L += ["", "## 🎟️ Tickets mortared from placed stones (cross-game, independent legs)", ""]
     if tk.empty:
         L += ["_Not enough placed stones across different games._"]
@@ -287,10 +288,15 @@ def main():
             for r in b.itertuples():
                 st = {"small": 0.002, "medium": 0.001, "moonshot": 0.0005}[lab]  # lottery tier <= ~0.5%/night
                 L.append(f"| {lab} | {r.legs} | {r.x:.1f}x | {r.p:.1%} | {r.ev:+.1%} | {r.cracks} | {st:.2%} |")
+                placed_tk.append(dict(size=lab, legs=r.legs, payout_x=r.x, p=r.p, ev=r.ev, cracks=r.cracks, stake=st))
     L += ["", f"**Total built exposure:** {built.stake_b.sum():.2%} of bankroll in singles. "
           f"By game: {built.groupby('game').stake_b.sum().round(4).map(lambda x: f'{x:.2%}').to_dict()}", ""]
     open(f"{OUT}/PYRAMID.md", "w").write("\n".join(L))
     q.drop(columns=["cracks"]).assign(cracks=q.cracks.map(str)).to_csv(f"{OUT}/quarry_inspected.csv", index=False)
+    # machine-readable placed stones + tickets (dashboard / grading)
+    built.drop(columns=["cracks"]).assign(cracks=built.cracks.map(str), stake=built.stake_b).to_csv(
+        f"{OUT}/pyramid_placed.csv", index=False)
+    pd.DataFrame(placed_tk).to_csv(f"{OUT}/pyramid_tickets.csv", index=False)
     print("\n".join(L))
 
 

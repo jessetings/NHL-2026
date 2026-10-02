@@ -1,0 +1,150 @@
+{
+ "by_source_daily": [
+  {
+   "date": "2026-09-30",
+   "source": "pyramid",
+   "n": 3,
+   "settled": 3,
+   "won": 0,
+   "staked": 0.045,
+   "pnl": -0.045,
+   "roi": -1.0,
+   "avg_clv": -0.007991,
+   "n_clv": 3,
+   "cum_pnl": -0.045,
+   "cum_staked": 0.045
+  },
+  {
+   "date": "2026-09-30",
+   "source": "ticket",
+   "n": 2,
+   "settled": 2,
+   "won": 0,
+   "staked": 0.003,
+   "pnl": -0.003,
+   "roi": -1.0,
+   "avg_clv": null,
+   "n_clv": 0,
+   "cum_pnl": -0.003,
+   "cum_staked": 0.003
+  },
+  {
+   "date": "2026-10-01",
+   "source": "early",
+   "n": 12,
+   "settled": 0,
+   "won": 0,
+   "staked": 0.0,
+   "pnl": 0.0,
+   "roi": null,
+   "avg_clv": 0.001707,
+   "n_clv": 12,
+   "cum_pnl": 0.0,
+   "cum_staked": 0.0
+  },
+  {
+   "date": "2026-10-01",
+   "source": "pyramid",
+   "n": 12,
+   "settled": 0,
+   "won": 0,
+   "staked": 0.0,
+   "pnl": 0.0,
+   "roi": null,
+   "avg_clv": 0.000826,
+   "n_clv": 12,
+   "cum_pnl": -0.045,
+   "cum_staked": 0.045
+  },
+  {
+   "date": "2026-10-01",
+   "source": "ticket",
+   "n": 9,
+   "settled": 0,
+   "won": 0,
+   "staked": 0.0,
+   "pnl": 0.0,
+   "roi": null,
+   "avg_clv": null,
+   "n_clv": 0,
+   "cum_pnl": -0.003,
+   "cum_staked": 0.003
+  }
+ ],
+ "ledger": [
+  {
+   "date": "2026-09-30",
+   "book": "draftkings",
+   "bet": "Matthew Schaefer U2.5 SOG",
+   "kind": "single",
+   "odds": 120.0,
+   "boost": null,
+   "stake_pct": 1.5,
+   "result": "lost",
+   "pnl_units": -1.5,
+   "start_bankroll": 100,
+   "notes": "final card (3 SOG)",
+   "bankroll": 98.5
+  },
+  {
+   "date": "2026-09-30",
+   "book": "fanduel",
+   "bet": "Quinton Byfield U2.5 SOG",
+   "kind": "single",
+   "odds": -140.0,
+   "boost": null,
+   "stake_pct": 1.5,
+   "result": "lost",
+   "pnl_units": -1.5,
+   "start_bankroll": 100,
+   "notes": "final card (3 SOG)",
+   "bankroll": 97.0
+  },
+  {
+   "date": "2026-09-30",
+   "book": "draftkings",
+   "bet": "Travis Konecny 2+ PTS",
+   "kind": "single",
+   "odds": 370.0,
+   "boost": 0.5,
+   "stake_pct": null,
+   "result": "lost",
+   "pnl_units": null,
+   "start_bankroll": 100,
+   "notes": "stake not recorded - fill in",
+   "bankroll": 97.0
+  },
+  {
+   "date": "2026-09-30",
+   "book": null,
+   "bet": "William Nylander AG + TOR team total + game total",
+   "kind": "parlay",
+   "odds": null,
+   "boost": 0.5,
+   "stake_pct": null,
+   "result": "lost",
+   "pnl_units": null,
+   "start_bankroll": 100,
+   "notes": "boosted parlay; stake/odds not recorded - fill in",
+   "bankroll": 97.0
+  }
+ ],
+ "bankroll_curve": [
+  {
+   "date": "2026-09-30",
+   "bankroll": 98.5
+  },
+  {
+   "date": "2026-09-30",
+   "bankroll": 97.0
+  },
+  {
+   "date": "2026-09-30",
+   "bankroll": 97.0
+  },
+  {
+   "date": "2026-09-30",
+   "bankroll": 97.0
+  }
+ ]
+}

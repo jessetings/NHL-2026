@@ -1,0 +1,195 @@
+{
+ "date": "2026-09-30",
+ "final": true,
+ "games": [
+  {
+   "game": "PIT@PHI",
+   "start": "2026-09-30T23:30:00Z",
+   "state": "OFF",
+   "away_score": 7,
+   "home_score": 0
+  },
+  {
+   "game": "NYI@TOR",
+   "start": "2026-09-30T23:30:00Z",
+   "state": "OFF",
+   "away_score": 1,
+   "home_score": 2
+  },
+  {
+   "game": "LAK@COL",
+   "start": "2026-10-01T02:00:00Z",
+   "state": "OFF",
+   "away_score": 4,
+   "home_score": 8
+  }
+ ],
+ "first_goal": {
+  "PIT@PHI": "Nick Robertson",
+  "NYI@TOR": "Colton Sissons",
+  "LAK@COL": "Brock Nelson"
+ },
+ "picks": [
+  {
+   "source": "pyramid",
+   "tier": "CAPSTONE",
+   "game": "NYI@TOR",
+   "player": "Matthew Schaefer",
+   "team": "NYI",
+   "role": "d1",
+   "market": "SOG",
+   "side": "under",
+   "line": 2.5,
+   "book": "draftkings",
+   "odds": 120,
+   "p": 0.480704,
+   "p_model": 0.502062,
+   "p_market": 0.466465,
+   "stake": 0.015,
+   "actual": 3.0,
+   "result": "lost",
+   "pnl": -0.015,
+   "close_odds": 120.0,
+   "clv": 0.0,
+   "implied": 0.454545
+  },
+  {
+   "source": "pyramid",
+   "tier": "FOUNDATION",
+   "game": "LAK@COL",
+   "player": "Quinton Byfield",
+   "team": "LAK",
+   "role": "f1",
+   "market": "SOG",
+   "side": "under",
+   "line": 2.5,
+   "book": "fanduel",
+   "odds": -140,
+   "p": 0.615248,
+   "p_model": 0.664204,
+   "p_market": 0.582611,
+   "stake": 0.015,
+   "actual": 3.0,
+   "result": "lost",
+   "pnl": -0.015,
+   "close_odds": -140.0,
+   "clv": 0.0,
+   "implied": 0.583333
+  },
+  {
+   "source": "pyramid",
+   "tier": "MIDDLE COURSE",
+   "game": "NYI@TOR",
+   "player": "William Nylander",
+   "team": "TOR",
+   "role": "f2",
+   "market": "PTS",
+   "side": "over",
+   "line": 1.5,
+   "book": "fanduel",
+   "odds": 265,
+   "p": 0.292162,
+   "p_model": 0.292802,
+   "p_market": 0.291736,
+   "stake": 0.015,
+   "actual": 0.0,
+   "result": "lost",
+   "pnl": -0.015,
+   "close_odds": 300.0,
+   "clv": -0.023973,
+   "implied": 0.273973
+  }
+ ],
+ "tickets": [
+  {
+   "source": "ticket",
+   "tier": "small",
+   "legs": [
+    {
+     "text": "Matthew Schaefer U2.5 SOG",
+     "book": "draftkings",
+     "odds": 120,
+     "player": "Matthew Schaefer",
+     "market": "SOG",
+     "side": "under",
+     "line": 2.5,
+     "actual": 3.0,
+     "result": "lost"
+    },
+    {
+     "text": "Quinton Byfield U2.5 SOG",
+     "book": "fanduel",
+     "odds": -140,
+     "player": "Quinton Byfield",
+     "market": "SOG",
+     "side": "under",
+     "line": 2.5,
+     "actual": 3.0,
+     "result": "lost"
+    }
+   ],
+   "payout_x": 3.771429,
+   "p": 0.295752,
+   "ev": 0.115408,
+   "stake": 0.002,
+   "result": "lost",
+   "pnl": -0.002
+  },
+  {
+   "source": "ticket",
+   "tier": "medium",
+   "legs": [
+    {
+     "text": "Quinton Byfield U2.5 SOG",
+     "book": "fanduel",
+     "odds": -140,
+     "player": "Quinton Byfield",
+     "market": "SOG",
+     "side": "under",
+     "line": 2.5,
+     "actual": 3.0,
+     "result": "lost"
+    },
+    {
+     "text": "William Nylander 2+ pts",
+     "book": "fanduel",
+     "odds": 265,
+     "player": "William Nylander",
+     "market": "PTS",
+     "side": "over",
+     "line": 1.5,
+     "actual": 0.0,
+     "result": "lost"
+    }
+   ],
+   "payout_x": 6.257143,
+   "p": 0.179752,
+   "ev": 0.124735,
+   "stake": 0.001,
+   "result": "lost",
+   "pnl": -0.001
+  }
+ ],
+ "summary": {
+  "pyramid": {
+   "n": 3,
+   "settled": 3,
+   "won": 0,
+   "staked": 0.045,
+   "pnl": -0.045,
+   "roi": -1.0,
+   "avg_clv": -0.007991,
+   "n_clv": 3
+  },
+  "ticket": {
+   "n": 2,
+   "settled": 2,
+   "won": 0,
+   "staked": 0.003,
+   "pnl": -0.003,
+   "roi": -1.0,
+   "avg_clv": null,
+   "n_clv": 0
+  }
+ }
+}
