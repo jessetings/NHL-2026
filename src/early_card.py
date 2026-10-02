@@ -47,7 +47,7 @@ def main(date):
     pl = df[df.player.notna() & df.stat.isin(STAT) & (df.bt == "ou") & df.book.isin(["draftkings", "fanduel"]) & ~df.alt]
     # never price games that have already started (snapshot prices would be in-game)
     m_ts = re.search(r"(\d{8}T\d{6}Z)", os.path.basename(snap))
-    snap_ts = pd.Timestamp(m_ts.group(1)).tz_localize("UTC") if m_ts else pd.Timestamp.now(tz="UTC")
+    snap_ts = pd.Timestamp(m_ts.group(1)).tz_convert("UTC") if m_ts else pd.Timestamp.now(tz="UTC")
     started = pd.to_datetime(pl.startsAt, utc=True) <= snap_ts
     if started.any():
         print(f"skipping {pl[started].eventID.nunique()} game(s) already started at snapshot time")
@@ -77,7 +77,7 @@ def main(date):
         imp = O.american_to_prob(r.odds)
         rows.append(dict(game=f"{r.opp}@{r.team_v2}" if r.is_home else f"{r.team_v2}@{r.opp}", player=r.player, unit=r.unit,
                          market=r.mk, side=r.side, line=r.line, book=r.book, odds=int(r.odds), mu=mean, p_v2=p,
-                         implied=imp, edge=p - imp, gp=r.gp_prior, ev=p * (1 + (r.odds / 100 if r.odds > 0 else 100 / -r.odds)) - 1))
+                         implied=imp, edge=p - imp, gp=r.gp_prior, new_team=bool(r.new_team), ev=p * (1 + (r.odds / 100 if r.odds > 0 else 100 / -r.odds)) - 1))
     t = pd.DataFrame(rows)
     # level correction (relative signal): market-implied mean per player-market from the de-vigged DK/FD pair,
     # slate-wide median v2/market ratio per market -> v2 means rescaled (robust to seasonal level drift)
@@ -106,7 +106,8 @@ def main(date):
     out = f"cards/{date}"
     os.makedirs(out, exist_ok=True)
     t.to_csv(f"{out}/early_all.csv", index=False)
-    best = best[best.gp >= MIN_GP]                 # backtest population had real NHL history (thin samples shrink low)
+    moved = best[best.new_team & (best.edge >= 0.04)]
+    best = best[(best.gp >= MIN_GP) & ~best.new_team]   # backtest population: real history, settled role on this team
     bets = best[[BET_RULE.get((mk, sd), 9) <= e for mk, sd, e in zip(best.market, best.side, best.edge)]]
     bets = bets.sort_values("edge", ascending=False).groupby("game").head(MAX_PER_GAME)   # shot volume correlates within a game
     L = [f"# Early Card — {date}", "",
@@ -122,6 +123,9 @@ def main(date):
                  f"{r.mu_rel:.2f} | {r.p_rel:.1%} | {r.implied:.1%} | {r.edge:+.1%} | {r.ev:+.1%} |")
     if bets.empty:
         L.append("| — none at current prices — | | | | | | | | | |")
+    if len(moved):
+        L += ["", "_New team this season (history from old club/role — not bets, watch only): " +
+              ", ".join(f"{r.player} {r.side} {r.line:g} {r.market} ({r.edge:+.1%})" for r in moved.itertuples()) + "_"]
     L += ["", "## 👀 Watchlist — v2 edge ≥ 6 pts in markets without a validated ROI (CLV positive historically; not bets)", "",
           "| Player | Game | Market | Bet | Price | v2 p | Implied | Edge |", "|---|---|---|---|---|---|---|---|"]
     w = best[(best.edge >= 0.06) & ~best.index.isin(bets.index)].head(25)

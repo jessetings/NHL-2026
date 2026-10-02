@@ -292,6 +292,7 @@ def live(date, goalies=None):
                 if cand.empty:
                     continue
                 pid = int(cand.player_id.iloc[0])
+                last_team = cand.team.iloc[0]
                 r = sp[sp.player_id == pid]
                 if r.empty or team not in st.index or opp not in st.index:
                     continue
@@ -315,6 +316,7 @@ def live(date, goalies=None):
                     elif any(t_ == slug.get(team) for t_, _ in ppu):          # team has DF PP units listed
                         r[c] = 0.5 * (r[c] or 0.0)
                 r["pp_unit"] = unit_pp or "-"
+                r["new_team"] = bool(isinstance(last_team, str) and last_team != team)
                 rows.append(r)
     R = pd.DataFrame(rows)
     # linemates from tonight's DailyFaceoff units (same team + same f#/d# group), their next-game EV rates
@@ -322,7 +324,7 @@ def live(date, goalies=None):
     for c, src in (("lm_ev_xg60", "ev_xg60"), ("lm_ev_pts60", "ev_pts60_"), ("lm_ev_sog60", "ev_sog60")):
         R[c] = [R[(R.team == t) & (R.unit == u) & (R.player_id != p)][src].mean() for t, u, p in zip(R.team, R.unit, R.player_id)]
     d = prep(R, lg, live=True)
-    out = d[["player_id", "name", "key", "team", "opp", "is_home", "unit", "pp_unit", "gp_prior"]].copy()
+    out = d[["player_id", "name", "key", "team", "opp", "is_home", "unit", "pp_unit", "gp_prior", "new_team"]].copy()
     for mk, p in P.items():
         if not mk.startswith("_"):
             out[f"mu_{mk}"] = mean(np.array([p.get(n, 0.0) for n in NAMES]), d, mk).values

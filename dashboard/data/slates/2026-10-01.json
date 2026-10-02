@@ -1,68 +1,73 @@
 {
  "date": "2026-10-01",
- "final": false,
+ "final": true,
  "games": [
   {
    "game": "PHI@NJD",
    "start": "2026-10-01T23:00:00Z",
-   "state": "LIVE",
-   "away_score": 1,
-   "home_score": 0
+   "state": "OFF",
+   "away_score": 2,
+   "home_score": 3
   },
   {
    "game": "TBL@NYR",
    "start": "2026-10-01T23:00:00Z",
-   "state": "LIVE",
-   "away_score": 0,
-   "home_score": 2
+   "state": "OFF",
+   "away_score": 1,
+   "home_score": 5
   },
   {
    "game": "BUF@CBJ",
    "start": "2026-10-01T23:00:00Z",
-   "state": "LIVE",
-   "away_score": 1,
-   "home_score": 3
+   "state": "OFF",
+   "away_score": 3,
+   "home_score": 6
   },
   {
    "game": "MIN@NSH",
    "start": "2026-10-02T00:00:00Z",
-   "state": "PRE",
-   "away_score": null,
-   "home_score": null
+   "state": "OFF",
+   "away_score": 3,
+   "home_score": 1
   },
   {
    "game": "SEA@CGY",
    "start": "2026-10-02T01:00:00Z",
-   "state": "FUT",
-   "away_score": null,
-   "home_score": null
+   "state": "OFF",
+   "away_score": 6,
+   "home_score": 1
   },
   {
    "game": "CHI@UTA",
    "start": "2026-10-02T01:30:00Z",
-   "state": "FUT",
-   "away_score": null,
-   "home_score": null
+   "state": "OFF",
+   "away_score": 0,
+   "home_score": 6
   },
   {
    "game": "EDM@VAN",
    "start": "2026-10-02T02:00:00Z",
-   "state": "FUT",
-   "away_score": null,
-   "home_score": null
+   "state": "OFF",
+   "away_score": 9,
+   "home_score": 7
   },
   {
    "game": "FLA@SJS",
    "start": "2026-10-02T02:00:00Z",
-   "state": "FUT",
-   "away_score": null,
-   "home_score": null
+   "state": "OFF",
+   "away_score": 3,
+   "home_score": 4
   }
  ],
  "first_goal": {
   "PHI@NJD": "Rasmus Ristolainen",
   "TBL@NYR": "Mika Zibanejad",
-  "BUF@CBJ": "Mattias Samuelsson"
+  "BUF@CBJ": "Mattias Samuelsson",
+  "MIN@NSH": "Nick Foligno",
+  "SEA@CGY": "Jordan Eberle",
+  "CHI@UTA": "Dylan Guenther",
+  "EDM@VAN": "Vasily Podkolzin",
+  "FLA@SJS": "Mason Marchment"
  },
  "picks": [
   {
@@ -81,9 +86,9 @@
    "p_model": 0.63451,
    "p_market": 0.58451,
    "stake": 0.015,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 5.0,
+   "result": "lost",
+   "pnl": -0.015,
    "close_odds": -125.0,
    "clv": 0.0,
    "implied": 0.555556
@@ -104,9 +109,9 @@
    "p_model": 0.714203,
    "p_market": 0.634068,
    "stake": 0.008496,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 2.0,
+   "result": "won",
+   "pnl": 0.00531,
    "close_odds": -160.0,
    "clv": 0.0,
    "implied": 0.615385
@@ -127,9 +132,9 @@
    "p_model": 0.638855,
    "p_market": 0.551215,
    "stake": 0.005784,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 0.0,
+   "result": "won",
+   "pnl": 0.00482,
    "close_odds": -120.0,
    "clv": 0.0,
    "implied": 0.545455
@@ -150,9 +155,9 @@
    "p_model": 0.567116,
    "p_market": 0.483429,
    "stake": 0.006236,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 4.0,
+   "result": "lost",
+   "pnl": -0.006236,
    "close_odds": 115.0,
    "clv": 0.0,
    "implied": 0.465116
@@ -173,9 +178,9 @@
    "p_model": 0.58354,
    "p_market": 0.490575,
    "stake": 0.005829,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 4.0,
+   "result": "lost",
+   "pnl": -0.005829,
    "close_odds": 106.0,
    "clv": 0.004668,
    "implied": 0.480769
@@ -196,9 +201,9 @@
    "p_model": 0.559757,
    "p_market": 0.453189,
    "stake": 0.003655,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 0.0,
+   "result": "won",
+   "pnl": 0.004386,
    "close_odds": 120.0,
    "clv": 0.0,
    "implied": 0.454545
@@ -219,9 +224,9 @@
    "p_model": 0.249535,
    "p_market": 0.240538,
    "stake": 0.014108,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 2.0,
+   "result": "won",
+   "pnl": 0.049377,
    "close_odds": 360.0,
    "clv": -0.004831,
    "implied": 0.222222
@@ -242,9 +247,9 @@
    "p_model": 0.286269,
    "p_market": 0.253014,
    "stake": 0.010892,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 0.0,
+   "result": "lost",
+   "pnl": -0.010892,
    "close_odds": 300.0,
    "clv": 0.0,
    "implied": 0.25
@@ -265,9 +270,9 @@
    "p_model": 0.352159,
    "p_market": 0.261068,
    "stake": 0.009387,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 2.0,
+   "result": "won",
+   "pnl": 0.031916,
    "close_odds": 340.0,
    "clv": 0.0,
    "implied": 0.227273
@@ -288,9 +293,9 @@
    "p_model": 0.050942,
    "p_market": 0.052102,
    "stake": 0.000881,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 0.0,
+   "result": "lost",
+   "pnl": -0.000881,
    "close_odds": 2200.0,
    "clv": 0.0,
    "implied": 0.043478
@@ -311,9 +316,9 @@
    "p_model": 0.086347,
    "p_market": 0.072962,
    "stake": 0.001289,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 0.0,
+   "result": "lost",
+   "pnl": -0.001289,
    "close_odds": 1400.0,
    "clv": 0.0,
    "implied": 0.066667
@@ -334,9 +339,9 @@
    "p_model": 0.370425,
    "p_market": 0.312079,
    "stake": 0.003443,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 0.0,
+   "result": "lost",
+   "pnl": -0.003443,
    "close_odds": 210.0,
    "clv": 0.010081,
    "implied": 0.3125
@@ -357,9 +362,9 @@
    "p_model": 0.554175,
    "p_market": null,
    "stake": 0.0075,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 0.0,
+   "result": "won",
+   "pnl": 0.009,
    "close_odds": 120.0,
    "clv": 0.0,
    "implied": 0.454545
@@ -380,9 +385,9 @@
    "p_model": 0.586007,
    "p_market": null,
    "stake": 0.0075,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 4.0,
+   "result": "lost",
+   "pnl": -0.0075,
    "close_odds": 104.0,
    "clv": -0.004853,
    "implied": 0.49505
@@ -403,9 +408,9 @@
    "p_model": 0.570165,
    "p_market": null,
    "stake": 0.0075,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 4.0,
+   "result": "lost",
+   "pnl": -0.0075,
    "close_odds": 106.0,
    "clv": 0.004668,
    "implied": 0.480769
@@ -426,9 +431,9 @@
    "p_model": 0.554105,
    "p_market": null,
    "stake": 0.0075,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 4.0,
+   "result": "lost",
+   "pnl": -0.0075,
    "close_odds": 115.0,
    "clv": 0.0,
    "implied": 0.465116
@@ -449,9 +454,9 @@
    "p_model": 0.69783,
    "p_market": null,
    "stake": 0.0075,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 2.0,
+   "result": "won",
+   "pnl": 0.004687,
    "close_odds": -160.0,
    "clv": 0.0,
    "implied": 0.615385
@@ -472,9 +477,9 @@
    "p_model": 0.624223,
    "p_market": null,
    "stake": 0.0075,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 0.0,
+   "result": "won",
+   "pnl": 0.00625,
    "close_odds": -120.0,
    "clv": 0.0,
    "implied": 0.545455
@@ -495,9 +500,9 @@
    "p_model": 0.651068,
    "p_market": null,
    "stake": 0.0075,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 0.0,
+   "result": "won",
+   "pnl": 0.005556,
    "close_odds": -145.0,
    "clv": 0.017369,
    "implied": 0.574468
@@ -518,9 +523,9 @@
    "p_model": 0.682404,
    "p_market": null,
    "stake": 0.0075,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 3.0,
+   "result": "lost",
+   "pnl": -0.0075,
    "close_odds": -165.0,
    "clv": 0.007257,
    "implied": 0.615385
@@ -541,9 +546,9 @@
    "p_model": 0.653796,
    "p_market": null,
    "stake": 0.0075,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 6.0,
+   "result": "lost",
+   "pnl": -0.0075,
    "close_odds": -154.0,
    "clv": 0.009525,
    "implied": 0.596774
@@ -564,9 +569,9 @@
    "p_model": 0.606213,
    "p_market": null,
    "stake": 0.0075,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 5.0,
+   "result": "lost",
+   "pnl": -0.0075,
    "close_odds": -125.0,
    "clv": 0.0,
    "implied": 0.555556
@@ -587,9 +592,9 @@
    "p_model": 0.531345,
    "p_market": null,
    "stake": 0.0075,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 3.0,
+   "result": "lost",
+   "pnl": -0.0075,
    "close_odds": 114.0,
    "clv": -0.01348,
    "implied": 0.480769
@@ -610,9 +615,9 @@
    "p_model": 0.475501,
    "p_market": null,
    "stake": 0.0075,
-   "actual": null,
-   "result": "open",
-   "pnl": 0.0,
+   "actual": 2.0,
+   "result": "lost",
+   "pnl": -0.0075,
    "close_odds": 130.0,
    "clv": 0.0,
    "implied": 0.434783
@@ -630,7 +635,9 @@
      "player": "Matt Boldy",
      "market": "SOG",
      "side": "under",
-     "line": 3.5
+     "line": 3.5,
+     "actual": 5.0,
+     "result": "lost"
     },
     {
      "text": "Brandon Montour U2.5 SOG",
@@ -639,15 +646,17 @@
      "player": "Brandon Montour",
      "market": "SOG",
      "side": "under",
-     "line": 2.5
+     "line": 2.5,
+     "actual": 4.0,
+     "result": "lost"
     }
    ],
    "payout_x": 3.87,
    "p": 0.312473,
    "ev": 0.209272,
    "stake": 0.002,
-   "result": "open",
-   "pnl": 0.0
+   "result": "lost",
+   "pnl": -0.002
   },
   {
    "source": "ticket",
@@ -660,7 +669,9 @@
      "player": "Matt Boldy",
      "market": "SOG",
      "side": "under",
-     "line": 3.5
+     "line": 3.5,
+     "actual": 5.0,
+     "result": "lost"
     },
     {
      "text": "Jake DeBrusk U2.5 SOG",
@@ -669,15 +680,17 @@
      "player": "Jake DeBrusk",
      "market": "SOG",
      "side": "under",
-     "line": 2.5
+     "line": 2.5,
+     "actual": 4.0,
+     "result": "lost"
     }
    ],
    "payout_x": 3.744,
    "p": 0.319037,
    "ev": 0.194474,
    "stake": 0.002,
-   "result": "open",
-   "pnl": 0.0
+   "result": "lost",
+   "pnl": -0.002
   },
   {
    "source": "ticket",
@@ -690,7 +703,9 @@
      "player": "Matt Boldy",
      "market": "SOG",
      "side": "under",
-     "line": 3.5
+     "line": 3.5,
+     "actual": 5.0,
+     "result": "lost"
     },
     {
      "text": "Elias Pettersson U2.5 SOG",
@@ -699,14 +714,16 @@
      "player": "Elias Pettersson",
      "market": "SOG",
      "side": "under",
-     "line": 2.5
+     "line": 2.5,
+     "actual": null,
+     "result": "void"
     }
    ],
    "payout_x": 2.925,
    "p": 0.402677,
    "ev": 0.177831,
    "stake": 0.002,
-   "result": "open",
+   "result": "void",
    "pnl": 0.0
   },
   {
@@ -720,7 +737,9 @@
      "player": "Matt Boldy",
      "market": "SOG",
      "side": "under",
-     "line": 3.5
+     "line": 3.5,
+     "actual": 5.0,
+     "result": "lost"
     },
     {
      "text": "Clayton Keller 2+ ast",
@@ -729,15 +748,17 @@
      "player": "Clayton Keller",
      "market": "A",
      "side": "over",
-     "line": 1.5
+     "line": 1.5,
+     "actual": 2.0,
+     "result": "won"
     }
    ],
    "payout_x": 8.1,
    "p": 0.147583,
    "ev": 0.195425,
    "stake": 0.001,
-   "result": "open",
-   "pnl": 0.0
+   "result": "lost",
+   "pnl": -0.001
   },
   {
    "source": "ticket",
@@ -750,7 +771,9 @@
      "player": "Matt Boldy",
      "market": "SOG",
      "side": "under",
-     "line": 3.5
+     "line": 3.5,
+     "actual": 5.0,
+     "result": "lost"
     },
     {
      "text": "Jake Guentzel 2+ pts",
@@ -759,15 +782,17 @@
      "player": "Jake Guentzel",
      "market": "PTS",
      "side": "over",
-     "line": 1.5
+     "line": 1.5,
+     "actual": 0.0,
+     "result": "lost"
     }
    ],
    "payout_x": 7.2,
    "p": 0.16099,
    "ev": 0.159131,
    "stake": 0.001,
-   "result": "open",
-   "pnl": 0.0
+   "result": "lost",
+   "pnl": -0.001
   },
   {
    "source": "ticket",
@@ -780,7 +805,9 @@
      "player": "Matt Boldy",
      "market": "SOG",
      "side": "under",
-     "line": 3.5
+     "line": 3.5,
+     "actual": 5.0,
+     "result": "lost"
     },
     {
      "text": "Dylan Guenther 2+ pts",
@@ -789,15 +816,17 @@
      "player": "Dylan Guenther",
      "market": "PTS",
      "side": "over",
-     "line": 1.5
+     "line": 1.5,
+     "actual": 2.0,
+     "result": "won"
     }
    ],
    "payout_x": 7.92,
    "p": 0.179844,
    "ev": 0.424367,
    "stake": 0.001,
-   "result": "open",
-   "pnl": 0.0
+   "result": "lost",
+   "pnl": -0.001
   },
   {
    "source": "ticket",
@@ -810,7 +839,9 @@
      "player": "Matt Boldy",
      "market": "SOG",
      "side": "under",
-     "line": 3.5
+     "line": 3.5,
+     "actual": 5.0,
+     "result": "lost"
     },
     {
      "text": "Bobby McMann 2+ goals",
@@ -819,15 +850,17 @@
      "player": "Bobby McMann",
      "market": "G",
      "side": "over",
-     "line": 1.5
+     "line": 1.5,
+     "actual": 0.0,
+     "result": "lost"
     }
    ],
    "payout_x": 41.4,
    "p": 0.031216,
    "ev": 0.292339,
    "stake": 0.0005,
-   "result": "open",
-   "pnl": 0.0
+   "result": "lost",
+   "pnl": -0.0005
   },
   {
    "source": "ticket",
@@ -840,7 +873,9 @@
      "player": "Matt Boldy",
      "market": "SOG",
      "side": "under",
-     "line": 3.5
+     "line": 3.5,
+     "actual": 5.0,
+     "result": "lost"
     },
     {
      "text": "Sam Reinhart 2+ goals",
@@ -849,15 +884,17 @@
      "player": "Sam Reinhart",
      "market": "G",
      "side": "over",
-     "line": 1.5
+     "line": 1.5,
+     "actual": 0.0,
+     "result": "lost"
     }
    ],
    "payout_x": 27.0,
    "p": 0.047343,
    "ev": 0.278254,
    "stake": 0.0005,
-   "result": "open",
-   "pnl": 0.0
+   "result": "lost",
+   "pnl": -0.0005
   },
   {
    "source": "ticket",
@@ -870,7 +907,9 @@
      "player": "Matt Boldy",
      "market": "SOG",
      "side": "under",
-     "line": 3.5
+     "line": 3.5,
+     "actual": 5.0,
+     "result": "lost"
     },
     {
      "text": "Clayton Keller 2+ ast",
@@ -879,7 +918,9 @@
      "player": "Clayton Keller",
      "market": "A",
      "side": "over",
-     "line": 1.5
+     "line": 1.5,
+     "actual": 2.0,
+     "result": "won"
     },
     {
      "text": "Jake Guentzel 2+ pts",
@@ -888,45 +929,47 @@
      "player": "Jake Guentzel",
      "market": "PTS",
      "side": "over",
-     "line": 1.5
+     "line": 1.5,
+     "actual": 0.0,
+     "result": "lost"
     }
    ],
    "payout_x": 32.4,
    "p": 0.039304,
    "ev": 0.273442,
    "stake": 0.0005,
-   "result": "open",
-   "pnl": 0.0
+   "result": "lost",
+   "pnl": -0.0005
   }
  ],
  "summary": {
   "early": {
    "n": 12,
-   "settled": 0,
-   "won": 0,
-   "staked": 0,
-   "pnl": 0.0,
-   "roi": null,
+   "settled": 12,
+   "won": 4,
+   "staked": 0.09,
+   "pnl": -0.034507,
+   "roi": -0.38341,
    "avg_clv": 0.001707,
    "n_clv": 12
   },
   "pyramid": {
    "n": 12,
-   "settled": 0,
-   "won": 0,
-   "staked": 0,
-   "pnl": 0.0,
-   "roi": null,
+   "settled": 12,
+   "won": 5,
+   "staked": 0.085,
+   "pnl": 0.052239,
+   "roi": 0.614572,
    "avg_clv": 0.000826,
    "n_clv": 12
   },
   "ticket": {
    "n": 9,
-   "settled": 0,
+   "settled": 8,
    "won": 0,
-   "staked": 0,
-   "pnl": 0.0,
-   "roi": null,
+   "staked": 0.0085,
+   "pnl": -0.0085,
+   "roi": -1.0,
    "avg_clv": null,
    "n_clv": 0
   }

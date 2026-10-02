@@ -1,15 +1,17 @@
 {
  "schema": 1,
- "generated_at": "2026-10-02T00:03:42+00:00",
+ "generated_at": "2026-10-02T15:36:31+00:00",
  "slates": [
   "2026-09-30",
-  "2026-10-01"
+  "2026-10-01",
+  "2026-10-02"
  ],
  "files": [
   "performance.json",
   "calibration.json",
   "research.json",
   "slates/2026-09-30.json",
-  "slates/2026-10-01.json"
+  "slates/2026-10-01.json",
+  "slates/2026-10-02.json"
  ]
 }

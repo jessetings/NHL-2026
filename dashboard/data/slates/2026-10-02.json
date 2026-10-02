@@ -1,0 +1,126 @@
+{
+ "date": "2026-10-02",
+ "final": false,
+ "games": [
+  {
+   "game": "NYR@DET",
+   "start": "2026-10-02T22:30:00Z",
+   "state": "FUT",
+   "away_score": null,
+   "home_score": null
+  },
+  {
+   "game": "WSH@CAR",
+   "start": "2026-10-02T23:00:00Z",
+   "state": "FUT",
+   "away_score": null,
+   "home_score": null
+  },
+  {
+   "game": "BOS@WPG",
+   "start": "2026-10-03T00:00:00Z",
+   "state": "FUT",
+   "away_score": null,
+   "home_score": null
+  },
+  {
+   "game": "STL@DAL",
+   "start": "2026-10-03T01:00:00Z",
+   "state": "FUT",
+   "away_score": null,
+   "home_score": null
+  },
+  {
+   "game": "ANA@VGK",
+   "start": "2026-10-03T02:00:00Z",
+   "state": "FUT",
+   "away_score": null,
+   "home_score": null
+  }
+ ],
+ "first_goal": {},
+ "picks": [
+  {
+   "source": "early",
+   "tier": "SOG-under rule",
+   "game": "STL@DAL",
+   "player": "Miro Heiskanen",
+   "team": null,
+   "role": "d1",
+   "market": "SOG",
+   "side": "under",
+   "line": 2.5,
+   "book": "draftkings",
+   "odds": -150,
+   "p": 0.729267,
+   "p_model": 0.729267,
+   "p_market": null,
+   "stake": 0.0075,
+   "actual": null,
+   "result": "open",
+   "pnl": 0.0,
+   "close_odds": -150.0,
+   "clv": 0.0,
+   "implied": 0.6
+  },
+  {
+   "source": "early",
+   "tier": "SOG-under rule",
+   "game": "ANA@VGK",
+   "player": "Cutter Gauthier",
+   "team": null,
+   "role": "f1",
+   "market": "SOG",
+   "side": "under",
+   "line": 3.5,
+   "book": "fanduel",
+   "odds": -148,
+   "p": 0.68739,
+   "p_model": 0.68739,
+   "p_market": null,
+   "stake": 0.0075,
+   "actual": null,
+   "result": "open",
+   "pnl": 0.0,
+   "close_odds": -148.0,
+   "clv": 0.0,
+   "implied": 0.596774
+  },
+  {
+   "source": "early",
+   "tier": "SOG-under rule",
+   "game": "BOS@WPG",
+   "player": "David Pastrnak",
+   "team": null,
+   "role": "f1",
+   "market": "SOG",
+   "side": "under",
+   "line": 3.5,
+   "book": "fanduel",
+   "odds": -132,
+   "p": 0.623626,
+   "p_model": 0.623626,
+   "p_market": null,
+   "stake": 0.0075,
+   "actual": null,
+   "result": "open",
+   "pnl": 0.0,
+   "close_odds": -132.0,
+   "clv": 0.0,
+   "implied": 0.568966
+  }
+ ],
+ "tickets": [],
+ "summary": {
+  "early": {
+   "n": 3,
+   "settled": 0,
+   "won": 0,
+   "staked": 0,
+   "pnl": 0.0,
+   "roi": null,
+   "avg_clv": 0.0,
+   "n_clv": 3
+  }
+ }
+}
