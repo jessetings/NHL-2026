@@ -55,3 +55,17 @@ Fitted structure:
 - `scripts/daily_refresh.sh` runs MoneyPuck current season → NHL API → curate → deployment → features → shotq → v2 predictions. It takes about 3 min.
 - `nightly.sh` now writes EARLY.md. The main card (`run_slate`) uses v2 means, with v1 as fallback; 98.6% of rows are on v2.
 - **To do: run the early card when DK/FD props open in the morning (ET).** That's where the validated edge lives.
+
+## 6. Line matchups, on-ice impact and "vs this opponent": tested, none add signal
+`src/features/onice.py` matches every EV shot to the skaters on the ice (shots × shift charts). It produces as-of on-ice xGF/xGA/HD per 60 and cross-team co-ice matchups. From those, quality of competition (QoC) = the co-ice-weighted average of the opponents' as-of on-ice xGA60.
+- **QoC varies very little:** sd 0.106 around a mean of 2.47 xGA60 (4%).
+- **Each candidate as an add-on to prop model v2**, out-of-sample on 2025-26, using the matchups that actually happened (an upper bound on what any pregame matchup prediction could do):
+
+| Add-on | SOG | G | A | PTS |
+|---|---|---|---|---|
+| QoC (opponents faced) | +0.01 ± 0.05 | +0.02 ± 0.03 | +0.04 ± 0.19 | +0.04 ± 0.24 |
+| Own on-ice xGF60 | −0.16 ± 0.19 | −0.02 ± 0.04 | −0.02 ± 0.03 | −0.01 ± 0.02 |
+(Δ log-loss ×1000; negative is better.)
+
+- **Player vs a specific opponent** ("he always scores against them"): the correlation between past residuals vs this opponent (n ≥ 3 games) and today's residual is +0.008 for SOG, +0.005 for goals and +0.011 for points (n = 57k; 2se = 0.008). The slope is 0.02, so +1 SOG/game of past over-performance becomes +0.016 SOG. **Treat it as noise and never use it as a reason.**
+- Linemate quality (§2) is the deployment context that does carry signal (goals elasticity 0.41).
